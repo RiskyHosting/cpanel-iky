@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login | ReyzCode Panel</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="https://files.catbox.moe/b0zzbm.jpg" type="image/jpg">
+</head>
+<body class="login-page">
+
+  <div class="login-container">
+    <div class="login-card">
+      <div class="card-header">
+        <img src="https://files.catbox.moe/b0zzbm.jpg" class="avatar" alt="avatar">
+        <h2 class="login-title">
+          <span class="gradient-text">Login ke ReyzCode Panel</span>
+        </h2>
+        <p class="login-subtitle">Masuk untuk mengakses panel management</p>
+      </div>
+
+      <form class="login-form" id="loginForm">
+        <div class="input-group">
+          <div class="input-container">
+            <input type="text" id="name" placeholder=" " required>
+            <label for="name">Nama Lengkap</label>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <div class="input-container">
+            <input type="password" id="password" placeholder=" " required>
+            <label for="password">Password</label>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <div class="input-container">
+            <input type="text" id="ip" placeholder=" " required>
+            <label for="ip">IP Address</label>
+          </div>
+        </div>
+
+        <button type="submit" class="login-btn">
+          <span class="btn-text">Masuk</span>
+          <div class="btn-loader hidden">
+            <div class="spinner"></div>
+          </div>
+        </button>
+      </form>
+
+      <div id="error" class="error-message"></div>
+      
+      <div class="card-footer">
+        <p class="footer-text">© 2025 - Reyz4You Official</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const akun = [
+      {
+        nama: "Reyz4You",
+        password: "Dev",
+        ip: "1.1.1.1",
+        kategori: "Creator"
+      },
+      {
+        nama: "RilzIntovert",
+        password: "Rilz201101",
+        ip: "1.1.1.1",
+        kategori: "Creator"
+      }
+    ];
+
+    function showError(message) {
+      const errorBox = document.getElementById("error");
+      errorBox.textContent = message;
+      errorBox.classList.add('show');
+      
+      setTimeout(() => {
+        errorBox.classList.remove('show');
+      }, 5000);
+    }
+
+    function showLoader() {
+      const btn = document.querySelector('.login-btn');
+      const btnText = document.querySelector('.btn-text');
+      const btnLoader = document.querySelector('.btn-loader');
+      
+      btn.disabled = true;
+      btnText.classList.add('hidden');
+      btnLoader.classList.remove('hidden');
+    }
+
+    function hideLoader() {
+      const btn = document.querySelector('.login-btn');
+      const btnText = document.querySelector('.btn-text');
+      const btnLoader = document.querySelector('.btn-loader');
+      
+      btn.disabled = false;
+      btnText.classList.remove('hidden');
+      btnLoader.classList.add('hidden');
+    }
+
+    function login() {
+      const nama = document.getElementById("name").value.trim();
+      const pass = document.getElementById("password").value.trim();
+      const ip = document.getElementById("ip").value.trim();
+
+      showLoader();
+
+      // Simulate loading delay for better UX
+      setTimeout(() => {
+        const user = akun.find(user =>
+          user.nama === nama &&
+          user.password === pass &&
+          user.ip === ip
+        );
+
+        if (!user) {
+          hideLoader();
+          showError("Login gagal! Data tidak cocok.");
+          return;
+        }
+
+        sessionStorage.setItem("akses", "true");
+        sessionStorage.setItem("role", user.kategori);
+        sessionStorage.setItem("nama", user.nama);
+
+        window.location.href = "cpanel.html";
+      }, 1500);
+    }
+
+    // Form submission handler
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      login();
+    });
+
+    // Add floating animation on page load
+    window.addEventListener('load', function() {
+      document.body.classList.add('loaded');
+    });
+  </script>
+</body>
+</html>
