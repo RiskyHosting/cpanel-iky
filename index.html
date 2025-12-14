@@ -35,13 +35,6 @@
           </div>
         </div>
 
-        <div class="input-group">
-          <div class="input-container">
-            <input type="text" id="ip" placeholder=" " required>
-            <label for="ip">IP Address</label>
-          </div>
-        </div>
-
         <button type="submit" class="login-btn">
           <span class="btn-text">Masuk</span>
           <div class="btn-loader hidden">
@@ -59,17 +52,19 @@
   </div>
 
   <script>
+    // Simpan API KEY di sini (Rahasiakan!)
+    window.PTERO_API_KEY = "ptla_Dmo5KBVkO12l1ZfiRosrSee65GEgKMKuan5nOks9cG6";
+    window.PTERO_DOMAIN = "https://peterodatcly.bimxyz.my.id";
+    
     const akun = [
       {
         nama: "risky",
         password: "risky4444",
-        ip: "4.4.4.4",
         kategori: "Creator"
       },
       {
         nama: "aurel",
         password: "risky4444",
-        ip: "4.4.4.4",
         kategori: "Creator"
       }
     ];
@@ -107,16 +102,13 @@
     function login() {
       const nama = document.getElementById("name").value.trim();
       const pass = document.getElementById("password").value.trim();
-      const ip = document.getElementById("ip").value.trim();
 
       showLoader();
 
-      // Simulate loading delay for better UX
       setTimeout(() => {
         const user = akun.find(user =>
           user.nama === nama &&
-          user.password === pass &&
-          user.ip === ip
+          user.password === pass
         );
 
         if (!user) {
@@ -130,16 +122,14 @@
         sessionStorage.setItem("nama", user.nama);
 
         window.location.href = "cpanel.html";
-      }, 1500);
+      }, 1000);
     }
 
-    // Form submission handler
     document.getElementById('loginForm').addEventListener('submit', function(e) {
       e.preventDefault();
       login();
     });
 
-    // Add floating animation on page load
     window.addEventListener('load', function() {
       document.body.classList.add('loaded');
     });
