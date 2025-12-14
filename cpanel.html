@@ -26,8 +26,8 @@
       
       <div class="header-actions">
         <div class="user-info">
-          <span class="user-name" id="userName"></span>
-          <span class="user-role" id="userRole"></span>
+          <span class="user-name" id="userName">Loading...</span>
+          <span class="user-role" id="userRole">User</span>
         </div>
         <button class="logout-btn" onclick="logout()">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -68,7 +68,7 @@
         <h3>Menu Navigasi</h3>
       </div>
       <nav class="sidebar-nav">
-        <button class="nav-btn active" data-section="create">
+        <button class="nav-btn active" data-section="create" onclick="showSection('create')">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="10"></circle>
             <line x1="12" y1="8" x2="12" y2="16"></line>
@@ -77,7 +77,7 @@
           Create Panel
         </button>
         
-        <button class="nav-btn" data-section="list">
+        <button class="nav-btn" data-section="list" onclick="showSection('list')">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="8" y1="6" x2="21" y2="6"></line>
             <line x1="8" y1="12" x2="21" y2="12"></line>
@@ -89,7 +89,7 @@
           List Panel
         </button>
         
-        <button class="nav-btn admin-only" id="btnAdmin1" data-section="createAdmin">
+        <button class="nav-btn admin-only" id="btnAdmin1" data-section="createAdmin" onclick="showSection('createAdmin')">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
             <circle cx="12" cy="7" r="4"></circle>
@@ -99,7 +99,7 @@
           Create Admin
         </button>
         
-        <button class="nav-btn admin-only" id="btnAdmin2" data-section="listAdmin">
+        <button class="nav-btn admin-only" id="btnAdmin2" data-section="listAdmin" onclick="showSection('listAdmin')">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
             <circle cx="9" cy="7" r="4"></circle>
@@ -127,17 +127,16 @@
               <div class="select-container">
                 <select id="size" required>
                   <option value="" disabled selected>Pilih Ram</option>
-                  <option value="1gb">1GB</option>
-                  <option value="2gb">2GB</option>
-                  <option value="3gb">3GB</option>
-                  <option value="4gb">4GB</option>
-                  <option value="5gb">5GB</option>
-                  <option value="6gb">6GB</option>
-                  <option value="7gb">7GB</option>
-                  <option value="8gb">8GB</option>
-                  <option value="9gb">9GB</option>
-                  <option value="10gb">10GB</option>
-                  <option value="unlimited">Unlimited</option>
+                  <option value="1024">1GB</option>
+                  <option value="2048">2GB</option>
+                  <option value="3072">3GB</option>
+                  <option value="4096">4GB</option>
+                  <option value="5120">5GB</option>
+                  <option value="6144">6GB</option>
+                  <option value="7168">7GB</option>
+                  <option value="8192">8GB</option>
+                  <option value="9216">9GB</option>
+                  <option value="10240">10GB</option>
                 </select>
               </div>
             </div>
@@ -240,5 +239,44 @@
   </div>
 
   <script src="script.js"></script>
+  <script>
+    // Initialize when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      initializeDashboard();
+      startTypingAnimation();
+    });
+    
+    function startTypingAnimation() {
+      const texts = ["Auto Panel Creator", "Pterodactyl API", "Reyz4You Developer", "Server Management"];
+      let textIndex = 0;
+      let charIndex = 0;
+      const typingElement = document.getElementById("typing");
+      
+      function typeText() {
+        if (typingElement && charIndex < texts[textIndex].length) {
+          typingElement.textContent += texts[textIndex].charAt(charIndex);
+          charIndex++;
+          setTimeout(typeText, 100);
+        } else if (typingElement) {
+          setTimeout(eraseText, 2000);
+        }
+      }
+      
+      function eraseText() {
+        if (typingElement && charIndex > 0) {
+          typingElement.textContent = texts[textIndex].substring(0, charIndex - 1);
+          charIndex--;
+          setTimeout(eraseText, 50);
+        } else if (typingElement) {
+          textIndex = (textIndex + 1) % texts.length;
+          setTimeout(typeText, 500);
+        }
+      }
+      
+      if (typingElement) {
+        typeText();
+      }
+    }
+  </script>
 </body>
-</html>
+  </html>
