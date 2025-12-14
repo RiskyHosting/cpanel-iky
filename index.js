@@ -17,9 +17,9 @@ app.use(
 app.use(express.json());
 app.use(express.static(path.join(__dirname)));
 
-const apikey = "ptla_v5zKgL35xvLXrt6qxJXiJsMfpuKR1Z01D1iTCK0fQd9";
-const capikey = "ptlc_q55RiG5RqYpRlSCTyWo0sFbanF4zfw3ChUU5wwn0HQX";
-const domain = "https://reyznew.storedigital.web.id";
+const apikey = "ptla_Dmo5KBVkO12l1ZfiRosrSee65GEgKMKuan5nOks9cG6";
+const capikey = "-";
+const domain = "https://peterodatcly.bimxyz.my.id";
 const nestid = "5";
 const egg = "15";
 const loc = "1";
