@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | ReyzCode Panel</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .login-container {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin-bottom: 15px;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 10px;
+            color: #60a5fa;
+        }
+        .subtitle {
+            text-align: center;
+            color: #94a3b8;
+            margin-bottom: 30px;
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            background: #334155;
+            border: 1px solid #475569;
+            border-radius: 5px;
+            color: white;
+            font-size: 16px;
+        }
+        input:focus {
+            outline: none;
+            border-color: #60a5fa;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #2563eb;
+        }
+        button:disabled {
+            background: #64748b;
+            cursor: not-allowed;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #94a3b8;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <img src="https://files.catbox.moe/b0zzbm.jpg" alt="Logo">
+            <h2>ReyzCode Panel</h2>
+            <p class="subtitle">Login untuk mengakses dashboard</p>
+        </div>
+        
+        <form id="loginForm">
+            <div class="input-group">
+                <input type="text" id="username" placeholder="Username" required>
+            </div>
+            <div class="input-group">
+                <input type="password" id="password" placeholder="Password" required>
+            </div>
+            <button type="submit" id="loginBtn">Login</button>
+        </form>
+        
+        <div class="footer">
+            <p>© 2025 Reyz4You Official</p>
+        </div>
+    </div>
+
+    <script>
+        // Users database (simple)
+        const users = [
+            { username: "risky", password: "risky4444", role: "admin" },
+            { username: "aurel", password: "risky4444", role: "admin" },
+            { username: "guest", password: "guest123", role: "user" }
+        ];
+
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const loginBtn = document.getElementById('loginBtn');
+            
+            // Show loading
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Loading...';
+            
+            // Simulate loading
+            setTimeout(() => {
+                const user = users.find(u => u.username === username && u.password === password);
+                
+                if (user) {
+                    // Save to session
+                    localStorage.setItem('loggedIn', 'true');
+                    localStorage.setItem('username', username);
+                    localStorage.setItem('role', user.role);
+                    
+                    // Redirect to dashboard
+                    window.location.href = 'dashboard.html';
+                } else {
+                    alert('Login gagal! Username atau password salah.');
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = 'Login';
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
