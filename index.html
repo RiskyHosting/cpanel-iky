@@ -472,6 +472,28 @@ button:hover { background: #2ea043; }
   margin-left: 5px;
 }
 
+/* Account list styles */
+.account-item {
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  padding: 12px;
+  margin: 8px 0;
+  font-size: 13px;
+}
+
+.account-admin {
+  border-left: 4px solid #f0a73a;
+}
+
+.account-user {
+  border-left: 4px solid #58a6ff;
+}
+
+.account-reseller {
+  border-left: 4px solid #9c27b0;
+}
+
 @media(max-width: 500px){
   .card {
     width: 95%;
@@ -622,23 +644,31 @@ button:hover { background: #2ea043; }
     • System Monitoring
   </div>
   
-  <h3>Create New Account</h3>
-  <input type="text" id="newUsername" placeholder="New Username" maxlength="20">
-  <input type="password" id="newPassword" placeholder="New Password">
+  <h3><i class="fas fa-user-plus"></i> Create New Account</h3>
+  <input type="text" id="newUsername" placeholder="New Username (min 3 chars)" maxlength="20">
+  <input type="password" id="newPassword" placeholder="New Password (min 6 chars)">
+  <input type="email" id="newEmail" placeholder="Email (optional)">
   
   <select id="accountType">
     <option value="user">Regular User</option>
-    <option value="reseller">Reseller</option>
-    <option value="admin">Admin</option>
+    <option value="admin">Admin (Root Admin)</option>
   </select>
   
-  <button id="createAccountBtn" class="btn-admin">Create Account</button>
-  <button id="listAllUsersBtn" style="background:#9c27b0;">List All Users</button>
-  <button id="listAllServersBtn" style="background:#ff9800;">List All Servers</button>
+  <button id="createAccountBtn" class="btn-admin">
+    <i class="fas fa-plus-circle"></i> Create Account
+  </button>
+  <button id="listAllAccountsBtn" style="background:#9c27b0;">
+    <i class="fas fa-users"></i> List All Accounts
+  </button>
+  <button id="listAllServersBtn" style="background:#ff9800;">
+    <i class="fas fa-server"></i> System Stats
+  </button>
   
-  <div id="adminResult" style="margin-top:15px; background:#0d1117; padding:10px; border-radius:8px; min-height:50px;"></div>
+  <div id="adminResult" style="margin-top:15px; background:#0d1117; padding:10px; border-radius:8px; min-height:50px; max-height:300px; overflow-y:auto;"></div>
   
-  <button id="adminLogoutBtn" style="background:#da3633; margin-top:20px;">Logout Admin</button>
+  <button id="adminLogoutBtn" style="background:#da3633; margin-top:20px;">
+    <i class="fas fa-sign-out-alt"></i> Logout Admin
+  </button>
 </div>
 
 <!-- RIWAYAT SERVER -->
@@ -792,8 +822,9 @@ const adminLogoutBtn = document.getElementById('adminLogoutBtn');
 const createAccountBtn = document.getElementById('createAccountBtn');
 const newUsername = document.getElementById('newUsername');
 const newPassword = document.getElementById('newPassword');
+const newEmail = document.getElementById('newEmail');
 const accountType = document.getElementById('accountType');
-const listAllUsersBtn = document.getElementById('listAllUsersBtn');
+const listAllAccountsBtn = document.getElementById('listAllAccountsBtn');
 const listAllServersBtn = document.getElementById('listAllServersBtn');
 const adminResult = document.getElementById('adminResult');
 
@@ -1032,6 +1063,10 @@ adminLoginBtn.addEventListener('click', async () => {
       adminLoginDiv.style.display = 'none';
       adminPanel.style.display = 'block';
       showToast('Admin login successful!', 'success');
+      
+      // Clear inputs
+      adminUsername.value = '';
+      adminPassword.value = '';
     } else {
       adminLoginError.textContent = data.message || 'Login failed';
       showToast('Admin login failed', 'error');
@@ -1043,112 +1078,213 @@ adminLoginBtn.addEventListener('click', async () => {
 });
 
 // ======================
-// ADMIN CREATE ACCOUNT
+// ADMIN CREATE ACCOUNT (FIXED)
 // ======================
 createAccountBtn.addEventListener('click', async () => {
   const username = newUsername.value.trim();
   const password = newPassword.value.trim();
   const type = accountType.value;
+  const email = newEmail.value.trim() || `${username}@admin.riskyhosting.com`;
   
-  if (!username || !password) {
-    showToast('Please fill all fields', 'warning');
+  if (!username || username.length < 3) {
+    showToast('Username minimal 3 karakter', 'warning');
     return;
   }
+  
+  if (!password || password.length < 6) {
+    showToast('Password minimal 6 karakter', 'warning');
+    return;
+  }
+  
+  if (!adminSessionId) {
+    showToast('Session expired. Silakan login kembali.', 'error');
+    adminLoginDiv.style.display = 'block';
+    adminPanel.style.display = 'none';
+    return;
+  }
+  
+  adminResult.innerHTML = 'Creating account...';
   
   try {
     const res = await fetch('/api/server', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        action: 'admin_create_user',
-        username: username,
-        password: password,
-        account_type: type
+        action: 'create_admin_account',
+        new_username: username,
+        new_password: password,
+        account_type: type,
+        email: email,
+        session_id: adminSessionId
       })
     });
     
     const data = await res.json();
     
     if (data.success) {
-      adminResult.innerHTML = 
-        `✅ Account created successfully!<br>
-         Username: ${escapeHTML(data.username)}<br>
-         Password: ${escapeHTML(data.password)}<br>
-         Type: ${escapeHTML(data.account_type)}`;
+      let html = `
+        <div style="color: #2ea043; margin-bottom: 15px;">
+          <i class="fas fa-check-circle"></i> <strong>Account Created Successfully!</strong>
+        </div>
+        <div class="account-item ${type === 'admin' ? 'account-admin' : 'account-user'}">
+          <strong>Username:</strong> ${escapeHTML(data.account?.username || username)}<br>
+          <strong>Password:</strong> ${escapeHTML(data.account?.password || password)}<br>
+          <strong>Email:</strong> ${escapeHTML(data.account?.email || email)}<br>
+          <strong>Type:</strong> ${escapeHTML(type === 'admin' ? 'Admin' : 'User')}<br>
+          <strong>Panel URL:</strong> ${escapeHTML(data.account?.panel_url || 'https://jaysukajanda.apcb.biz.id/auth/login')}
+        </div>
+        <div style="margin-top: 15px; background: #0d1117; padding: 10px; border-radius: 6px; font-size: 12px;">
+          <strong>Login Info:</strong><br>
+          ${escapeHTML(data.login_info || `Panel: https://jaysukajanda.apcb.biz.id/auth/login\nUsername: ${username}\nPassword: ${password}`)}
+        </div>
+      `;
       
-      showToast('Account created!', 'success');
+      adminResult.innerHTML = html;
       
+      // Clear inputs
       newUsername.value = '';
       newPassword.value = '';
+      newEmail.value = '';
+      
+      showToast(`${type === 'admin' ? 'Admin' : 'User'} account created successfully!`, 'success');
     } else {
       adminResult.innerHTML = 
-        `❌ Error: ${escapeHTML(data.message)}`;
-      showToast('Failed to create account', 'error');
+        `<div style="color: #da3633;">
+          <i class="fas fa-times-circle"></i> <strong>Error:</strong> ${escapeHTML(data.message || 'Unknown error')}
+        </div>`;
+      showToast('Failed to create account: ' + data.message, 'error');
     }
   } catch (err) {
     adminResult.innerHTML = 
-      `❌ Connection error: ${escapeHTML(err.message)}`;
+      `<div style="color: #da3633;">
+        <i class="fas fa-times-circle"></i> <strong>Connection error:</strong> ${escapeHTML(err.message)}
+      </div>`;
     showToast('Connection error', 'error');
   }
 });
 
 // ======================
-// ADMIN LIST USERS
+// ADMIN LIST ALL ACCOUNTS (FIXED)
 // ======================
-listAllUsersBtn.addEventListener('click', async () => {
+listAllAccountsBtn.addEventListener('click', async () => {
+  if (!adminSessionId) {
+    showToast('Session expired. Silakan login kembali.', 'error');
+    adminLoginDiv.style.display = 'block';
+    adminPanel.style.display = 'none';
+    return;
+  }
+  
+  adminResult.innerHTML = 'Loading accounts...';
+  
   try {
     const res = await fetch('/api/server', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        action: 'admin_list_users'
+        action: 'list_all_accounts',
+        session_id: adminSessionId
       })
     });
     
     const data = await res.json();
     
-    if (data.success && data.users) {
-      let html = '<strong>All Users:</strong><br>';
-      data.users.forEach(user => {
-        html += `• ${escapeHTML(user.username)} (${escapeHTML(user.type)})<br>`;
+    if (data.success && data.accounts) {
+      let html = `
+        <div style="margin-bottom: 15px;">
+          <i class="fas fa-users"></i> <strong>All Accounts (Total: ${data.total || 0})</strong>
+        </div>
+      `;
+      
+      data.accounts.forEach(account => {
+        const typeClass = account.is_admin ? 'account-admin' : 'account-user';
+        const typeLabel = account.is_admin ? 'Admin' : 'User';
+        const createdDate = new Date(account.created_at).toLocaleString();
+        
+        html += `
+          <div class="account-item ${typeClass}">
+            <strong>${escapeHTML(account.username)}</strong> 
+            <span class="admin-badge">${typeLabel}</span><br>
+            <small>Email: ${escapeHTML(account.email)}</small><br>
+            <small>Created: ${escapeHTML(createdDate)}</small><br>
+            <small>ID: ${escapeHTML(account.id)}</small>
+          </div>
+        `;
       });
+      
       adminResult.innerHTML = html;
     } else {
       adminResult.innerHTML = 
-        `❌ Error: ${escapeHTML(data.message)}`;
+        `<div style="color: #da3633;">
+          <i class="fas fa-times-circle"></i> <strong>Error:</strong> ${escapeHTML(data.message || 'Unknown error')}
+        </div>`;
     }
   } catch (err) {
     adminResult.innerHTML = 
-      `❌ Connection error: ${escapeHTML(err.message)}`;
+      `<div style="color: #da3633;">
+        <i class="fas fa-times-circle"></i> <strong>Connection error:</strong> ${escapeHTML(err.message)}
+      </div>`;
+    showToast('Connection error', 'error');
   }
 });
 
 // ======================
-// ADMIN LIST SERVERS
+// ADMIN SYSTEM STATS (FIXED)
 // ======================
 listAllServersBtn.addEventListener('click', async () => {
+  if (!adminSessionId) {
+    showToast('Session expired. Silakan login kembali.', 'error');
+    adminLoginDiv.style.display = 'block';
+    adminPanel.style.display = 'none';
+    return;
+  }
+  
+  adminResult.innerHTML = 'Loading system stats...';
+  
   try {
     const res = await fetch('/api/server', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        action: 'list'
+        action: 'system_stats',
+        session_id: adminSessionId
       })
     });
     
     const data = await res.json();
     
-    if (data.success) {
-      adminResult.innerHTML = 
-        `<strong>Total Servers in Panel:</strong> ${data.count}<br>
-         <small>Use panel management for detailed server list</small>`;
+    if (data.success && data.stats) {
+      const stats = data.stats;
+      const panelStatus = stats.panel_status === 'online' ? 
+        '<span style="color:#2ea043">ONLINE</span>' : 
+        '<span style="color:#da3633">OFFLINE</span>';
+      
+      let html = `
+        <div style="margin-bottom: 15px;">
+          <i class="fas fa-chart-bar"></i> <strong>System Statistics</strong>
+        </div>
+        <div class="account-item">
+          <strong>Panel Status:</strong> ${panelStatus}<br>
+          <strong>Total Servers:</strong> ${stats.total_servers || 0}<br>
+          <strong>Total Users:</strong> ${stats.total_users || 0}<br>
+          <strong>Admin Users:</strong> ${stats.admin_users || 0}<br>
+          <strong>Panel URL:</strong> ${escapeHTML(stats.panel_url || 'N/A')}<br>
+          <strong>Last Update:</strong> ${escapeHTML(stats.last_update ? new Date(stats.last_update).toLocaleString() : 'N/A')}
+        </div>
+      `;
+      
+      adminResult.innerHTML = html;
     } else {
       adminResult.innerHTML = 
-        `❌ Error: ${escapeHTML(data.message)}`;
+        `<div style="color: #da3633;">
+          <i class="fas fa-times-circle"></i> <strong>Error:</strong> ${escapeHTML(data.message || 'Unknown error')}
+        </div>`;
     }
   } catch (err) {
     adminResult.innerHTML = 
-      `❌ Connection error: ${escapeHTML(err.message)}`;
+      `<div style="color: #da3633;">
+        <i class="fas fa-times-circle"></i> <strong>Connection error:</strong> ${escapeHTML(err.message)}
+      </div>`;
+    showToast('Connection error', 'error');
   }
 });
 
@@ -1449,47 +1585,41 @@ function checkAdminSession() {
 checkAdminSession();
 
 // ======================
-// ADD SYSTEM STATS BUTTON FOR ADMIN
+// ENTER KEY SUPPORT
 // ======================
+document.addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') {
+    if (loginDiv.style.display !== 'none') {
+      loginBtn.click();
+    } else if (adminLoginDiv.style.display !== 'none') {
+      adminLoginBtn.click();
+    }
+  }
+});
+
+// ======================
+// PASSWORD VISIBILITY TOGGLE (OPTIONAL)
+// ======================
+function togglePasswordVisibility(inputId) {
+  const input = document.getElementById(inputId);
+  const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+  input.setAttribute('type', type);
+}
+
+// Add eye icons to password fields (optional enhancement)
 document.addEventListener('DOMContentLoaded', function() {
-  // Add System Stats button to admin panel
-  const adminPanel = document.getElementById('adminPanel');
-  if (adminPanel) {
-    const systemStatsBtn = document.createElement('button');
-    systemStatsBtn.innerHTML = '<i class="fas fa-chart-bar"></i> System Stats';
-    systemStatsBtn.style.background = '#1f6feb';
-    systemStatsBtn.style.marginTop = '10px';
-    systemStatsBtn.id = 'systemStatsBtn';
-    
-    const createAccountBtn = document.getElementById('createAccountBtn');
-    createAccountBtn.parentNode.insertBefore(systemStatsBtn, createAccountBtn.nextSibling);
-    
-    // Add event listener for System Stats
-    systemStatsBtn.addEventListener('click', async function() {
-      try {
-        const res = await fetch('/api/server');
-        const data = await res.json();
-        
-        if (data.success) {
-          adminResult.innerHTML = 
-            `<strong>System Statistics:</strong><br>
-             Total Servers: ${data.count || 0}<br>
-             Panel Status: <span style="color:#2ea043">ONLINE</span><br>
-             Last Check: ${new Date().toLocaleTimeString()}<br>
-             <small>Admin Functions are fully operational</small>`;
-        } else {
-          adminResult.innerHTML = 
-            `<strong>System Statistics:</strong><br>
-             Panel Status: <span style="color:#da3633">OFFLINE</span><br>
-             Error: ${escapeHTML(data.message || 'Unknown')}`;
-        }
-      } catch (err) {
-        adminResult.innerHTML = 
-          `❌ Connection error: ${escapeHTML(err.message)}`;
+  // Add email field validation
+  if (newEmail) {
+    newEmail.addEventListener('blur', function() {
+      if (this.value && !this.value.includes('@')) {
+        this.style.borderColor = '#da3633';
+        showToast('Email tidak valid', 'warning');
+      } else {
+        this.style.borderColor = '#30363d';
       }
     });
   }
 });
 </script>
 </body>
-</html>
+      </html>
