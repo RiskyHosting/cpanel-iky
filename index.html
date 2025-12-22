@@ -454,6 +454,24 @@ button:hover { background: #2ea043; }
   font-size: 12px;
 }
 
+/* ADMIN STYLES */
+.btn-admin {
+  background: linear-gradient(90deg, #f0a73a, #ff9800) !important;
+}
+
+.btn-admin:hover {
+  background: linear-gradient(90deg, #ff9800, #ffb347) !important;
+}
+
+.admin-badge {
+  background: #f0a73a;
+  color: black;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  margin-left: 5px;
+}
+
 @media(max-width: 500px){
   .card {
     width: 95%;
@@ -474,24 +492,6 @@ button:hover { background: #2ea043; }
     right: 20px;
     max-width: none;
   }
-}
-
-/* ADMIN STYLES */
-.btn-admin {
-  background: linear-gradient(90deg, #f0a73a, #ff9800);
-}
-
-.btn-admin:hover {
-  background: linear-gradient(90deg, #ff9800, #ffb347);
-}
-
-.admin-badge {
-  background: #f0a73a;
-  color: black;
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-size: 10px;
-  margin-left: 5px;
 }
 </style>
 </head>
@@ -653,6 +653,7 @@ button:hover { background: #2ea043; }
 // SIMPLE SECURITY CONFIG
 // ======================
 let currentSessionId = localStorage.getItem('session_id') || '';
+let adminSessionId = localStorage.getItem('admin_session_id') || '';
 let loginAttemptCount = 0;
 const MAX_LOGIN_ATTEMPTS = 5;
 
@@ -883,7 +884,6 @@ function checkLogin(){
   currentSessionId = localStorage.getItem('session_id') || '';
   
   if(currentSessionId){
-    // Verifikasi session dengan server
     fetch('/api/server', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
@@ -898,7 +898,6 @@ function checkLogin(){
         loginDiv.style.display='none';
         panel.style.display='block';
       } else {
-        // Session invalid
         localStorage.removeItem('session_id');
         currentSessionId = '';
         loginDiv.style.display='block';
@@ -907,7 +906,6 @@ function checkLogin(){
       }
     })
     .catch(() => {
-      // Jika error, tetap logout untuk safety
       localStorage.removeItem('session_id');
       currentSessionId = '';
       loginDiv.style.display='block';
@@ -935,7 +933,6 @@ loginBtn.addEventListener('click', async ()=>{
   const password = document.getElementById('password').value.trim();
   loginError.textContent="";
   
-  // Rate limiting check
   loginAttemptCount++;
   if(loginAttemptCount > MAX_LOGIN_ATTEMPTS){
     loginError.textContent = "Terlalu banyak percobaan login. Coba lagi nanti.";
@@ -956,10 +953,8 @@ loginBtn.addEventListener('click', async ()=>{
     const data = await res.json();
     
     if(data.success){
-      // Reset attempt counter
       loginAttemptCount = 0;
       
-      // Save session ID
       if(data.session_id){
         localStorage.setItem('session_id', data.session_id);
         currentSessionId = data.session_id;
@@ -977,7 +972,6 @@ loginBtn.addEventListener('click', async ()=>{
     } else {
       loginError.textContent = data.message || "Login gagal";
       
-      // Show attempts left
       const attemptsLeft = MAX_LOGIN_ATTEMPTS - loginAttemptCount;
       if(attemptsLeft > 0){
         showToast(`Login gagal. Sisa percobaan: ${attemptsLeft}`, 'error');
@@ -1017,11 +1011,11 @@ adminLoginBtn.addEventListener('click', async () => {
   adminLoginError.textContent = '';
   
   try {
-    const res = await fetch('/api/admin', {
+    const res = await fetch('/api/server', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        action: 'login',
+        action: 'admin_login',
         username: username,
         password: password
       })
@@ -1030,6 +1024,11 @@ adminLoginBtn.addEventListener('click', async () => {
     const data = await res.json();
     
     if (data.success) {
+      if (data.session_id) {
+        localStorage.setItem('admin_session_id', data.session_id);
+        adminSessionId = data.session_id;
+      }
+      
       adminLoginDiv.style.display = 'none';
       adminPanel.style.display = 'block';
       showToast('Admin login successful!', 'success');
@@ -1044,7 +1043,7 @@ adminLoginBtn.addEventListener('click', async () => {
 });
 
 // ======================
-// ADMIN FUNCTIONS
+// ADMIN CREATE ACCOUNT
 // ======================
 createAccountBtn.addEventListener('click', async () => {
   const username = newUsername.value.trim();
@@ -1057,11 +1056,11 @@ createAccountBtn.addEventListener('click', async () => {
   }
   
   try {
-    const res = await fetch('/api/admin', {
+    const res = await fetch('/api/server', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        action: 'create_user',
+        action: 'admin_create_user',
         username: username,
         password: password,
         account_type: type
@@ -1079,7 +1078,6 @@ createAccountBtn.addEventListener('click', async () => {
       
       showToast('Account created!', 'success');
       
-      // Clear form
       newUsername.value = '';
       newPassword.value = '';
     } else {
@@ -1094,13 +1092,16 @@ createAccountBtn.addEventListener('click', async () => {
   }
 });
 
+// ======================
+// ADMIN LIST USERS
+// ======================
 listAllUsersBtn.addEventListener('click', async () => {
   try {
-    const res = await fetch('/api/admin', {
+    const res = await fetch('/api/server', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        action: 'list_users'
+        action: 'admin_list_users'
       })
     });
     
@@ -1122,24 +1123,25 @@ listAllUsersBtn.addEventListener('click', async () => {
   }
 });
 
+// ======================
+// ADMIN LIST SERVERS
+// ======================
 listAllServersBtn.addEventListener('click', async () => {
   try {
-    const res = await fetch('/api/admin', {
+    const res = await fetch('/api/server', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        action: 'list_servers'
+        action: 'list'
       })
     });
     
     const data = await res.json();
     
-    if (data.success && data.servers) {
-      let html = `<strong>All Servers (${data.servers.length}):</strong><br>`;
-      data.servers.forEach(server => {
-        html += `• ${escapeHTML(server.name)} - ${server.ram} GB<br>`;
-      });
-      adminResult.innerHTML = html;
+    if (data.success) {
+      adminResult.innerHTML = 
+        `<strong>Total Servers in Panel:</strong> ${data.count}<br>
+         <small>Use panel management for detailed server list</small>`;
     } else {
       adminResult.innerHTML = 
         `❌ Error: ${escapeHTML(data.message)}`;
@@ -1150,10 +1152,30 @@ listAllServersBtn.addEventListener('click', async () => {
   }
 });
 
-adminLogoutBtn.addEventListener('click', () => {
-  adminPanel.style.display = 'none';
-  loginDiv.style.display = 'block';
-  showToast('Admin logged out', 'info');
+// ======================
+// ADMIN LOGOUT
+// ======================
+adminLogoutBtn.addEventListener('click', async () => {
+  try {
+    if (adminSessionId) {
+      await fetch('/api/server', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'logout',
+          session_id: adminSessionId
+        })
+      });
+    }
+  } catch (err) {
+    // Ignore
+  } finally {
+    localStorage.removeItem('admin_session_id');
+    adminSessionId = '';
+    adminPanel.style.display = 'none';
+    loginDiv.style.display = 'block';
+    showToast('Admin logged out', 'info');
+  }
 });
 
 // ======================
@@ -1161,7 +1183,6 @@ adminLogoutBtn.addEventListener('click', () => {
 // ======================
 document.getElementById('logoutBtn').addEventListener('click', async ()=>{
   try {
-    // Kirim request logout ke server
     await fetch('/api/server', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
@@ -1171,9 +1192,8 @@ document.getElementById('logoutBtn').addEventListener('click', async ()=>{
       })
     });
   } catch (err) {
-    // Ignore errors on logout
+    // Ignore
   } finally {
-    // Clear semua data lokal
     localStorage.removeItem('session_id');
     localStorage.removeItem('username');
     localStorage.removeItem('loginTime');
@@ -1182,7 +1202,6 @@ document.getElementById('logoutBtn').addEventListener('click', async ()=>{
     currentSessionId = '';
     loginAttemptCount = 0;
     
-    // Reset UI
     hideActionButtons();
     location.reload();
   }
@@ -1247,7 +1266,6 @@ document.getElementById('createBtn').addEventListener('click', async ()=>{
       hideActionButtons();
       showToast('Gagal membuat server: ' + data.message, 'error');
       
-      // Jika session expired, reload
       if(data.message.includes('Session') || data.message.includes('expired')){
         setTimeout(() => location.reload(), 2000);
       }
@@ -1397,30 +1415,81 @@ function resetInactivityTimer() {
     inactivityTimer = setTimeout(() => {
       showToast('Session berakhir karena tidak aktif', 'warning');
       document.getElementById('logoutBtn').click();
-    }, 20 * 60 * 1000); // 20 menit
+    }, 20 * 60 * 1000);
   }
 }
 
-// Reset timer pada aktivitas user
 ['click', 'mousemove', 'keypress', 'scroll'].forEach(event => {
   document.addEventListener(event, resetInactivityTimer);
 });
 
-// Start timer
 resetInactivityTimer();
 
 // ======================
 // INPUT VALIDATION
 // ======================
 document.getElementById('serverName').addEventListener('input', function(e){
-  // Hanya izinkan alphanumeric, dash, dan underscore
   this.value = this.value.replace(/[^a-zA-Z0-9-_]/g, '');
 });
 
 // ======================
-// PASSWORD VISIBILITY TOGGLE (OPTIONAL)
+// CHECK ADMIN SESSION ON LOAD
 // ======================
+function checkAdminSession() {
+  const adminSession = localStorage.getItem('admin_session_id');
+  if (adminSession) {
+    loginDiv.style.display = 'none';
+    panel.style.display = 'none';
+    adminLoginDiv.style.display = 'none';
+    adminPanel.style.display = 'block';
+  }
+}
 
+// Run on page load
+checkAdminSession();
+
+// ======================
+// ADD SYSTEM STATS BUTTON FOR ADMIN
+// ======================
+document.addEventListener('DOMContentLoaded', function() {
+  // Add System Stats button to admin panel
+  const adminPanel = document.getElementById('adminPanel');
+  if (adminPanel) {
+    const systemStatsBtn = document.createElement('button');
+    systemStatsBtn.innerHTML = '<i class="fas fa-chart-bar"></i> System Stats';
+    systemStatsBtn.style.background = '#1f6feb';
+    systemStatsBtn.style.marginTop = '10px';
+    systemStatsBtn.id = 'systemStatsBtn';
+    
+    const createAccountBtn = document.getElementById('createAccountBtn');
+    createAccountBtn.parentNode.insertBefore(systemStatsBtn, createAccountBtn.nextSibling);
+    
+    // Add event listener for System Stats
+    systemStatsBtn.addEventListener('click', async function() {
+      try {
+        const res = await fetch('/api/server');
+        const data = await res.json();
+        
+        if (data.success) {
+          adminResult.innerHTML = 
+            `<strong>System Statistics:</strong><br>
+             Total Servers: ${data.count || 0}<br>
+             Panel Status: <span style="color:#2ea043">ONLINE</span><br>
+             Last Check: ${new Date().toLocaleTimeString()}<br>
+             <small>Admin Functions are fully operational</small>`;
+        } else {
+          adminResult.innerHTML = 
+            `<strong>System Statistics:</strong><br>
+             Panel Status: <span style="color:#da3633">OFFLINE</span><br>
+             Error: ${escapeHTML(data.message || 'Unknown')}`;
+        }
+      } catch (err) {
+        adminResult.innerHTML = 
+          `❌ Connection error: ${escapeHTML(err.message)}`;
+      }
+    });
+  }
+});
 </script>
 </body>
 </html>
