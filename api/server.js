@@ -1,4 +1,4 @@
-// api/server.js - VERSI LENGKAP DENGAN CREATE ADMIN
+// api/server.js - FULL VERSION WITH ADMIN CREATE PANEL
 import { validateLogin } from './account';
 import { PANEL_URL, API_KEY, NODE_ID, NEST_ID, EGG_ID, DOCKER_IMG } from './panel';
 
@@ -31,52 +31,6 @@ function cleanupOldSessions() {
 // Cleanup every 5 minutes
 setInterval(cleanupOldSessions, 5 * 60 * 1000);
 
-// === CREATE USER IN PTERODACTYL ===
-async function createUserInPterodactyl(userData) {
-  const { username, password, email, isAdmin } = userData;
-  
-  try {
-    const userRes = await fetch(`${PANEL_URL}/api/application/users`, {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${API_KEY}`,
-        "Content-Type": "application/json",
-        "Accept": "application/json"
-      },
-      body: JSON.stringify({
-        email: email || `${username}@riskyhosting.com`,
-        username: username.toLowerCase().replace(/\s+/g, "_"),
-        first_name: username,
-        last_name: isAdmin ? "Admin" : "User",
-        password: password,
-        root_admin: isAdmin,
-        language: "en"
-      })
-    });
-
-    const data = await userRes.json();
-    
-    if (!userRes.ok) {
-      throw new Error(data.errors?.[0]?.detail || JSON.stringify(data));
-    }
-
-    return {
-      success: true,
-      id: data.attributes.id,
-      username: data.attributes.username,
-      email: data.attributes.email,
-      is_admin: data.attributes.root_admin,
-      created_at: data.attributes.created_at
-    };
-    
-  } catch (error) {
-    return {
-      success: false,
-      error: error.message
-    };
-  }
-}
-
 export default async function handler(req, res) {
   if (req.method === "GET") {
     try {
@@ -105,7 +59,7 @@ export default async function handler(req, res) {
   }
 
   if (req.method === "POST") {
-    const { action, username, password, name, ram, serverId, session_id, account_type } = req.body;
+    const { action, username, password, name, ram, serverId, session_id, account_type, new_username, new_password, email } = req.body;
     const clientIP = getClientIP(req);
 
     try {
@@ -185,11 +139,9 @@ export default async function handler(req, res) {
         }
       }
 
-      // 👑 CREATE ADMIN ACCOUNT (FITUR BARU)
+      // 👑 CREATE ADMIN ACCOUNT IN PTERODACTYL (FITUR BARU)
       if (action === "create_admin_account") {
-        const { new_username, new_password, email, account_type } = req.body;
-        
-        // Validasi
+        // Validasi input
         if (!new_username || new_username.length < 3) {
           return res.json({ 
             success: false, 
@@ -204,39 +156,68 @@ export default async function handler(req, res) {
           });
         }
         
-        // Buat akun di Pterodactyl
-        const createResult = await createUserInPterodactyl({
-          username: new_username,
-          password: new_password,
-          email: email || `${new_username}@admin.riskyhosting.com`,
-          isAdmin: account_type === 'admin'
-        });
-        
-        if (createResult.success) {
+        try {
+          // Buat user di Pterodactyl
+          const userRes = await fetch(`${PANEL_URL}/api/application/users`, {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${API_KEY}`,
+              "Content-Type": "application/json",
+              "Accept": "application/json"
+            },
+            body: JSON.stringify({
+              email: email || `${new_username}@admin.riskyhosting.com`,
+              username: new_username.toLowerCase().replace(/\s+/g, "_"),
+              first_name: new_username,
+              last_name: account_type === 'admin' ? 'Admin' : 'User',
+              password: new_password,
+              root_admin: account_type === 'admin',
+              language: "en"
+            })
+          });
+
+          const userData = await userRes.json();
+          
+          if (!userRes.ok) {
+            // Cek jika username sudah ada
+            if (userData.errors?.[0]?.detail?.includes('already exists')) {
+              return res.json({ 
+                success: false, 
+                message: `Username "${new_username}" sudah ada di panel` 
+              });
+            }
+            return res.json({ 
+              success: false, 
+              message: JSON.stringify(userData.errors || userData) 
+            });
+          }
+
+          // Success response
           return res.json({
             success: true,
-            message: `✅ ${account_type === 'admin' ? 'Admin' : 'User'} account berhasil dibuat di Pterodactyl!`,
+            message: `✅ ${account_type === 'admin' ? 'Admin' : 'User'} account berhasil dibuat!`,
             account: {
-              id: createResult.id,
-              username: createResult.username,
+              id: userData.attributes.id,
+              username: userData.attributes.username,
               password: new_password,
-              email: createResult.email,
+              email: userData.attributes.email,
               type: account_type || 'user',
-              is_admin: createResult.is_admin,
+              is_admin: userData.attributes.root_admin,
               panel_url: `${PANEL_URL}/auth/login`,
-              created_at: createResult.created_at
+              created_at: userData.attributes.created_at
             },
-            login_info: `Panel URL: ${PANEL_URL}/auth/login\nUsername: ${createResult.username}\nPassword: ${new_password}`
+            login_info: `Panel: ${PANEL_URL}/auth/login\nUsername: ${userData.attributes.username}\nPassword: ${new_password}`
           });
-        } else {
+          
+        } catch (error) {
           return res.json({
             success: false,
-            message: `Gagal membuat akun: ${createResult.error}`
+            message: `Server error: ${error.message}`
           });
         }
       }
 
-      // 📋 LIST ALL ACCOUNTS
+      // 📋 LIST ALL ACCOUNTS FROM PTERODACTYL
       if (action === "list_all_accounts") {
         try {
           const usersRes = await fetch(`${PANEL_URL}/api/application/users`, {
@@ -256,16 +237,21 @@ export default async function handler(req, res) {
             });
           }
 
+          // Format data
+          const formattedUsers = usersData.data.map(user => ({
+            id: user.attributes.id,
+            username: user.attributes.username,
+            email: user.attributes.email,
+            is_admin: user.attributes.root_admin,
+            created_at: user.attributes.created_at,
+            first_name: user.attributes.first_name,
+            last_name: user.attributes.last_name
+          }));
+
           return res.json({
             success: true,
             total: usersData.meta.pagination.total,
-            accounts: usersData.data.map(user => ({
-              id: user.attributes.id,
-              username: user.attributes.username,
-              email: user.attributes.email,
-              is_admin: user.attributes.root_admin,
-              created_at: user.attributes.created_at
-            }))
+            accounts: formattedUsers
           });
           
         } catch (error) {
@@ -309,7 +295,7 @@ export default async function handler(req, res) {
         });
       }
 
-      // 🛡️ CHECK SESSION
+      // 🛡️ CHECK SESSION for other actions
       if (action === 'create' || action === 'delete' || action === 'list') {
         if (!session_id) {
           return res.json({ success: false, message: "Session diperlukan!" });
@@ -333,6 +319,7 @@ export default async function handler(req, res) {
         const email = `user${Date.now()}@buyer.bimxyz.com`;
         const userPassword = Math.random().toString(36).slice(-8);
 
+        // Buat user
         const userRes = await fetch(`${PANEL_URL}/api/application/users`, {
           method: "POST",
           headers: {
@@ -357,6 +344,7 @@ export default async function handler(req, res) {
 
         const userId = userData.attributes.id;
 
+        // Cari allocation kosong
         let freeAlloc = null;
         let page = 1;
 
@@ -384,6 +372,7 @@ export default async function handler(req, res) {
           return res.json({ success: false, message: "Ga ada allocation kosong!" });
         }
 
+        // Ambil environment variable dari egg
         const eggRes = await fetch(`${PANEL_URL}/api/application/nests/${NEST_ID}/eggs/${EGG_ID}?include=variables`, {
           headers: {
             "Authorization": `Bearer ${API_KEY}`,
@@ -398,6 +387,7 @@ export default async function handler(req, res) {
           env[v.attributes.env_variable] = v.attributes.default_value || "";
         });
 
+        // Buat server
         const serverRes = await fetch(`${PANEL_URL}/api/application/servers`, {
           method: "POST",
           headers: {
@@ -490,6 +480,51 @@ export default async function handler(req, res) {
         }
       }
 
+      // 📊 SYSTEM STATS
+      if (action === "system_stats") {
+        try {
+          // Get servers count
+          const serverRes = await fetch(`${PANEL_URL}/api/application/servers`, {
+            method: "GET",
+            headers: {
+              "Authorization": `Bearer ${API_KEY}`,
+              "Accept": "application/json"
+            }
+          });
+
+          const serverData = await serverRes.json();
+          
+          // Get users count
+          const usersRes = await fetch(`${PANEL_URL}/api/application/users`, {
+            method: "GET",
+            headers: {
+              "Authorization": `Bearer ${API_KEY}`,
+              "Accept": "application/json"
+            }
+          });
+
+          const usersData = await usersRes.json();
+
+          return res.json({
+            success: true,
+            stats: {
+              total_servers: serverData.meta?.pagination?.total || 0,
+              total_users: usersData.meta?.pagination?.total || 0,
+              admin_users: usersData.data?.filter(u => u.attributes.root_admin)?.length || 0,
+              panel_status: serverRes.ok ? "online" : "offline",
+              last_update: new Date().toISOString(),
+              panel_url: PANEL_URL
+            }
+          });
+          
+        } catch (error) {
+          return res.json({
+            success: false,
+            message: error.message
+          });
+        }
+      }
+
       return res.json({ success: false, message: "Action tidak dikenal" });
 
     } catch (err) {
@@ -498,4 +533,4 @@ export default async function handler(req, res) {
   }
 
   return res.status(405).json({ success: false, message: "Method not allowed" });
-      }
+        }
