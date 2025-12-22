@@ -671,7 +671,7 @@ let users = [];
 // Load configuration - SAME AS ORIGINAL
 async function loadSetting() {
   try {
-    const res = await fetch("/api/setting");
+    const res = await fetch("/api/setting.js");
     const set = await res.json();
 
     // EXACT SAME AS ORIGINAL CODE
