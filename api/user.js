@@ -9,7 +9,6 @@ export const users = [
   }
 ];
 
-// Function untuk validasi login
 export function validateLogin(username, password) {
   return users.some(user => 
     user.username === username && user.password === password
