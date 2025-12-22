@@ -475,6 +475,24 @@ button:hover { background: #2ea043; }
     max-width: none;
   }
 }
+
+/* ADMIN STYLES */
+.btn-admin {
+  background: linear-gradient(90deg, #f0a73a, #ff9800);
+}
+
+.btn-admin:hover {
+  background: linear-gradient(90deg, #ff9800, #ffb347);
+}
+
+.admin-badge {
+  background: #f0a73a;
+  color: black;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  margin-left: 5px;
+}
 </style>
 </head>
 <body> 
@@ -516,6 +534,13 @@ button:hover { background: #2ea043; }
   <input type="password" id="password" placeholder="Password" autocomplete="off" style="width: 100%;">
   </div>
   <button id="loginBtn">Login</button>
+  
+  <div style="text-align:center; margin-top:10px;">
+    <a href="#" id="switchToAdmin" style="color:#f0a73a; text-decoration:none; font-size:13px;">
+      <i class="fas fa-crown"></i> Login as Admin
+    </a>
+  </div>
+  
   <div id="loginError" style="color:red; text-align:center; margin-top:5px;"></div>
 
   <div style="text-align:center; margin-top:15px; font-size:13px;">
@@ -524,6 +549,17 @@ button:hover { background: #2ea043; }
       <b>Beli sekarang</b>
     </a>
   </div>
+</div>
+
+<!-- ADMIN LOGIN PANEL -->
+<div class="card" id="adminLoginDiv" style="display:none;">
+  <div class="server-status"><span class="maintenance">ADMIN ACCESS</span></div>
+  <h1><i class="fas fa-crown"></i> Admin Panel Login</h1>
+  <input type="text" id="adminUsername" placeholder="Admin Username">
+  <input type="password" id="adminPassword" placeholder="Admin Password">
+  <button id="adminLoginBtn" class="btn-admin">Login as Admin</button>
+  <button id="backToUserBtn" style="background:#1f6feb; margin-top:5px;">Back to User Login</button>
+  <div id="adminLoginError" style="color:red; text-align:center; margin-top:5px;"></div>
 </div>
 
 <!-- CPANEL UTAMA -->
@@ -537,7 +573,7 @@ button:hover { background: #2ea043; }
     <br>• ALL TRANSAKSI NO REFUND
     <br>• EXPIRED PANEL ±1 BULAN PENUH
     <br>• BIKIN SERVER HARUS DIPAKAI
-    <br>• MASUK GRUB INFORMATION (IKON WHATSAPP DIBAWAH) UNTUK UPDATE STATUS
+    <br>• MASUK GRUB INFORMATION (IKON WHATSAPP DIBAWAH) UNTIK UPDATE STATUS
   </div>
   <h2>Buat Server</h2>
   <input type="text" id="serverName" placeholder="Nama Server" maxlength="20">
@@ -559,6 +595,12 @@ button:hover { background: #2ea043; }
     </button>
   </div>
   
+  <div style="text-align:center; margin-top:10px;">
+    <a href="#" id="switchToAdminFromPanel" style="color:#f0a73a; text-decoration:none; font-size:13px;">
+      <i class="fas fa-crown"></i> Switch to Admin Panel
+    </a>
+  </div>
+  
   <button id="logoutBtn" style="margin-top:10px;">Logout</button>
   <div class="contact">
     <a href="https://chat.whatsapp.com/CoY2paBPem72BNAPvAjgyJ" target="_blank"><i class="fab fa-whatsapp"></i></a>
@@ -566,8 +608,41 @@ button:hover { background: #2ea043; }
   </div>
 </div>
 
+<!-- ADMIN PANEL UTAMA -->
+<div class="card" id="adminPanel" style="display:none;">
+  <div class="server-status"><span class="online">ADMIN MODE</span></div>
+  
+  <h2><i class="fas fa-crown"></i> Admin Control Panel</h2>
+  
+  <div class="info" style="border-color:#f0a73a;">
+    <i class="fas fa-shield-alt"></i> <strong>Admin Functions:</strong><br>
+    • Create User/Admin Accounts<br>
+    • View All Servers<br>
+    • Manage User Limits<br>
+    • System Monitoring
+  </div>
+  
+  <h3>Create New Account</h3>
+  <input type="text" id="newUsername" placeholder="New Username" maxlength="20">
+  <input type="password" id="newPassword" placeholder="New Password">
+  
+  <select id="accountType">
+    <option value="user">Regular User</option>
+    <option value="reseller">Reseller</option>
+    <option value="admin">Admin</option>
+  </select>
+  
+  <button id="createAccountBtn" class="btn-admin">Create Account</button>
+  <button id="listAllUsersBtn" style="background:#9c27b0;">List All Users</button>
+  <button id="listAllServersBtn" style="background:#ff9800;">List All Servers</button>
+  
+  <div id="adminResult" style="margin-top:15px; background:#0d1117; padding:10px; border-radius:8px; min-height:50px;"></div>
+  
+  <button id="adminLogoutBtn" style="background:#da3633; margin-top:20px;">Logout Admin</button>
+</div>
+
 <!-- RIWAYAT SERVER -->
-<div class="card" id="historySection">
+<div class="card" id="historySection" style="display:none;">
   <h2>Riwayat Server</h2>
   <div id="historyList"></div>
   <button id="backBtn">Kembali</button>
@@ -699,6 +774,27 @@ const actionButtons = document.getElementById('actionButtons');
 const copyUserBtn = document.getElementById('copyUserBtn');
 const openPanelBtn = document.getElementById('openPanelBtn');
 const copyPassBtn = document.getElementById('copyPassBtn');
+
+// ======================
+// ADMIN UI ELEMENTS
+// ======================
+const adminLoginDiv = document.getElementById('adminLoginDiv');
+const adminPanel = document.getElementById('adminPanel');
+const adminLoginBtn = document.getElementById('adminLoginBtn');
+const adminUsername = document.getElementById('adminUsername');
+const adminPassword = document.getElementById('adminPassword');
+const adminLoginError = document.getElementById('adminLoginError');
+const backToUserBtn = document.getElementById('backToUserBtn');
+const switchToAdmin = document.getElementById('switchToAdmin');
+const switchToAdminFromPanel = document.getElementById('switchToAdminFromPanel');
+const adminLogoutBtn = document.getElementById('adminLogoutBtn');
+const createAccountBtn = document.getElementById('createAccountBtn');
+const newUsername = document.getElementById('newUsername');
+const newPassword = document.getElementById('newPassword');
+const accountType = document.getElementById('accountType');
+const listAllUsersBtn = document.getElementById('listAllUsersBtn');
+const listAllServersBtn = document.getElementById('listAllServersBtn');
+const adminResult = document.getElementById('adminResult');
 
 // ======================
 // RAM OPTIONS
@@ -896,6 +992,171 @@ loginBtn.addEventListener('click', async ()=>{
 });
 
 // ======================
+// ADMIN LOGIN HANDLER
+// ======================
+switchToAdmin.addEventListener('click', (e) => {
+  e.preventDefault();
+  loginDiv.style.display = 'none';
+  adminLoginDiv.style.display = 'block';
+});
+
+switchToAdminFromPanel.addEventListener('click', (e) => {
+  e.preventDefault();
+  panel.style.display = 'none';
+  adminLoginDiv.style.display = 'block';
+});
+
+backToUserBtn.addEventListener('click', () => {
+  adminLoginDiv.style.display = 'none';
+  loginDiv.style.display = 'block';
+});
+
+adminLoginBtn.addEventListener('click', async () => {
+  const username = adminUsername.value.trim();
+  const password = adminPassword.value.trim();
+  adminLoginError.textContent = '';
+  
+  try {
+    const res = await fetch('/api/admin', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'login',
+        username: username,
+        password: password
+      })
+    });
+    
+    const data = await res.json();
+    
+    if (data.success) {
+      adminLoginDiv.style.display = 'none';
+      adminPanel.style.display = 'block';
+      showToast('Admin login successful!', 'success');
+    } else {
+      adminLoginError.textContent = data.message || 'Login failed';
+      showToast('Admin login failed', 'error');
+    }
+  } catch (err) {
+    adminLoginError.textContent = 'Connection error';
+    showToast('Error connecting to server', 'error');
+  }
+});
+
+// ======================
+// ADMIN FUNCTIONS
+// ======================
+createAccountBtn.addEventListener('click', async () => {
+  const username = newUsername.value.trim();
+  const password = newPassword.value.trim();
+  const type = accountType.value;
+  
+  if (!username || !password) {
+    showToast('Please fill all fields', 'warning');
+    return;
+  }
+  
+  try {
+    const res = await fetch('/api/admin', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'create_user',
+        username: username,
+        password: password,
+        account_type: type
+      })
+    });
+    
+    const data = await res.json();
+    
+    if (data.success) {
+      adminResult.innerHTML = 
+        `✅ Account created successfully!<br>
+         Username: ${escapeHTML(data.username)}<br>
+         Password: ${escapeHTML(data.password)}<br>
+         Type: ${escapeHTML(data.account_type)}`;
+      
+      showToast('Account created!', 'success');
+      
+      // Clear form
+      newUsername.value = '';
+      newPassword.value = '';
+    } else {
+      adminResult.innerHTML = 
+        `❌ Error: ${escapeHTML(data.message)}`;
+      showToast('Failed to create account', 'error');
+    }
+  } catch (err) {
+    adminResult.innerHTML = 
+      `❌ Connection error: ${escapeHTML(err.message)}`;
+    showToast('Connection error', 'error');
+  }
+});
+
+listAllUsersBtn.addEventListener('click', async () => {
+  try {
+    const res = await fetch('/api/admin', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'list_users'
+      })
+    });
+    
+    const data = await res.json();
+    
+    if (data.success && data.users) {
+      let html = '<strong>All Users:</strong><br>';
+      data.users.forEach(user => {
+        html += `• ${escapeHTML(user.username)} (${escapeHTML(user.type)})<br>`;
+      });
+      adminResult.innerHTML = html;
+    } else {
+      adminResult.innerHTML = 
+        `❌ Error: ${escapeHTML(data.message)}`;
+    }
+  } catch (err) {
+    adminResult.innerHTML = 
+      `❌ Connection error: ${escapeHTML(err.message)}`;
+  }
+});
+
+listAllServersBtn.addEventListener('click', async () => {
+  try {
+    const res = await fetch('/api/admin', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'list_servers'
+      })
+    });
+    
+    const data = await res.json();
+    
+    if (data.success && data.servers) {
+      let html = `<strong>All Servers (${data.servers.length}):</strong><br>`;
+      data.servers.forEach(server => {
+        html += `• ${escapeHTML(server.name)} - ${server.ram} GB<br>`;
+      });
+      adminResult.innerHTML = html;
+    } else {
+      adminResult.innerHTML = 
+        `❌ Error: ${escapeHTML(data.message)}`;
+    }
+  } catch (err) {
+    adminResult.innerHTML = 
+      `❌ Connection error: ${escapeHTML(err.message)}`;
+  }
+});
+
+adminLogoutBtn.addEventListener('click', () => {
+  adminPanel.style.display = 'none';
+  loginDiv.style.display = 'block';
+  showToast('Admin logged out', 'info');
+});
+
+// ======================
 // LOGOUT (MODIFIED)
 // ======================
 document.getElementById('logoutBtn').addEventListener('click', async ()=>{
@@ -955,7 +1216,7 @@ document.getElementById('createBtn').addEventListener('click', async ()=>{
         action:'create', 
         name, 
         ram,
-        session_id: currentSessionId  // ← TAMBAH INI
+        session_id: currentSessionId
       })
     });
     
@@ -1016,7 +1277,7 @@ document.getElementById('listBtn').addEventListener('click', async ()=>{
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
         action: 'list',
-        session_id: currentSessionId  // ← TAMBAH INI
+        session_id: currentSessionId
       })
     });
     
@@ -1093,7 +1354,7 @@ function renderHistory(){
           body:JSON.stringify({
             action:'delete', 
             serverId: entry.serverId,
-            session_id: currentSessionId  // ← TAMBAH INI
+            session_id: currentSessionId
           })
         });
         
@@ -1159,7 +1420,6 @@ document.getElementById('serverName').addEventListener('input', function(e){
 // ======================
 // PASSWORD VISIBILITY TOGGLE (OPTIONAL)
 // ======================
-
 
 </script>
 </body>
