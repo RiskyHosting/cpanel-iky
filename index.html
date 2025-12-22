@@ -3,894 +3,684 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>🎀 Aurel Cpanel - Risky Hosting</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link rel="preload" href="https://files.catbox.moe/aokrcz.mp4" as="video">
-<style>
-/* FONT IMPORTS */
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;600;800&display=swap');
+<title>WEB CPANEL - RISKY HOSTING</title>
 
-/* GLOBAL STYLES - Modern Dark Mode (Requime-like) */
-:root {
-  --color-bg-dark: #0f0f13; 
-  --color-card-dark: #1f2029; 
-  --color-primary-blue: #00BFFF; 
-  --color-primary-green: #3DDC84; 
-  --color-primary-red: #FF6B6B; 
-  --color-text-light: #e0e4eb;
-  --color-border-subtle: #3A404E;
-  --shadow-main: 0 10px 40px rgba(0, 0, 0, 0.6);
-}
+<!-- ============ SECURITY HEADERS (FIXED) ============ -->
+<meta http-equiv="Content-Security-Policy" 
+      content="
+        default-src 'self';
+        script-src 'self' https://cdnjs.cloudflare.com 'unsafe-inline';
+        style-src  'self' https://cdnjs.cloudflare.com https://fonts.googleapis.com 'unsafe-inline';
+        font-src   'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:;
+        img-src    'self' data: https:;
+        connect-src 'self';
+        frame-ancestors 'none';
+        form-action 'self';
+      ">
+
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="X-Frame-Options" content="DENY">
+<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+<meta name="robots" content="noindex, nofollow">
+
+<!-- FONT AWESOME (ICON FIX) -->
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer">
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Poppins&display=swap');
 
 body {
   margin: 0;
-  font-family: 'Inter', sans-serif;
-  /* Hapus background default body agar tidak bentrok dengan background #loginDiv */
-  background: linear-gradient(135deg, var(--color-bg-dark) 0%, #16171d 100%); 
-  color: var(--color-text-light);
+  font-family: 'Poppins', sans-serif;
+  background: #0d1117;
+  color: #e6e6e6;
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
   min-height: 100vh;
-  padding: 20px;
-  overflow-x: hidden;
+  overflow-y: hidden;
 }
 
 h1, h2 {
-  font-family: 'Space Grotesk', sans-serif;
-  color: var(--color-text-light);
-  margin-bottom: 20px;
-  font-weight: 700;
-  text-align: center;
-}
-
-h1 {
-  font-size: 2em;
-  background: linear-gradient(90deg, var(--color-primary-blue), #007ACC);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-bottom: 30px;
+  font-family: 'Orbitron', sans-serif;
+  color: #fff;
+  margin-bottom: 15px;
 }
 
 .card {
-  /* Hapus background agar background image di #loginDiv bisa terlihat */
-  background: none; 
-  backdrop-filter: none; /* Hapus blur */
-  padding: 35px;
-  border-radius: 18px;
-  box-shadow: none; /* Hapus shadow utama */
-  width: 450px;
-  max-width: 100%;
-  border: none; /* Hapus border */
+  background: #161b22;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  width: 460px;
+  margin: 0;
   overflow-y: auto;
   max-height: 90vh;
   box-sizing: border-box;
-  transition: all 0.5s ease;
-  position: relative; 
 }
 
-/* --- KODE LOGIN PANEL DIBUAT SEDERHANA --- */
-#loginDiv {
-    background: var(--color-card-dark); 
-    position: relative;
-    z-index: 1; 
-    /* MODIFIKASI: Hapus padding-top agar gambar header menempel rata */
-    padding: 0 35px 35px 35px; 
-    border-radius: 18px;
-    box-shadow: var(--shadow-main);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    overflow: hidden;
-}
-
-/* **MODIFIKASI PENTING: HAPUS pseudo-element #loginDiv::before (YANG MEMBUATNYA FULL) ** */
-/* Ganti dengan hanya menghapus kode ::before yang lama */
-#loginDiv::before {
-    content: none; /* Hapus fungsi pseudo-element lama */
-}
-
-/* Pastikan semua elemen di dalamnya ada di atas background */
-#loginDiv h1, #loginDiv .input-group, #loginDiv button, #loginDiv .register-link, #loginDiv .new-login-header {
-    position: relative;
-    z-index: 2; 
-}
-
-#loginDiv h1 {
-    font-size: 1.8em;
-    text-align: center;
-    background: linear-gradient(90deg, #58a6ff, #1f6feb);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-#loginDiv input {
-    border-radius: 10px;
-    /* Ubah background input agar terlihat kontras di atas overlay */
-    background: rgba(13, 17, 23, 0.9); 
-    border: 2px solid #30363d;
-}
-#loginDiv #loginBtn {
-    background: linear-gradient(135deg, #4c68d7 0%, #3b59c7 100%);
-}
-
-/* PERBAIKAN 1: Menambah margin bottom pada input group agar lebih lega */
-.input-group {
-  margin: 20px 0 25px 0; 
-}
-
-.input-label {
-  display: block;
-  margin-bottom: 10px;
-  color: var(--color-text-light);
-  font-size: 14px;
-  font-weight: 600;
-}
-
-input, select {
-  padding: 15px 20px;
+input, select, button {
+  margin: 10px 0;
+  padding: 10px;
   width: 100%;
+  max-width: 100%;
   box-sizing: border-box;
-  border-radius: 10px;
-  border: 1px solid var(--color-border-subtle);
+  border-radius: 8px;
+  border: 1px solid #30363d;
   outline: none;
-  font-size: 16px;
-  background: var(--color-bg-dark);
-  color: var(--color-text-light);
-  transition: all 0.3s ease;
+  font-size: 14px;
+  background: #0d1117;
+  color: #e6e6e6;
+  transition: all 0.2s ease;
 }
 
-/* BUTTONS */
+input:focus, select:focus {
+  border-color: #58a6ff;
+  box-shadow: 0 0 0 2px rgba(88,166,255,0.3);
+}
+
 button {
-  padding: 15px 20px;
-  width: 100%;
-  box-sizing: border-box;
-  border-radius: 10px;
   cursor: pointer;
-  font-weight: 700;
+  background: #238636;
+  color: #fff;
+  font-weight: bold;
   border: none;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  font-size: 16px;
-  margin-top: 15px;
+  transition: 0.3s;
 }
+button:hover { background: #2ea043; }
+#logoutBtn { background: #da3633; }
+#logoutBtn:hover { background: #f85149; }
+.deleteBtn { background: #da3633; margin-top:5px; }
+.deleteBtn:hover { background: #f85149; }
 
-/* Primary Button (Login/Create) */
-#loginBtn, #createBtn {
-  background: linear-gradient(45deg, var(--color-primary-blue), #007ACC);
-  color: #fff;
-  box-shadow: 0 4px 15px rgba(0, 191, 255, 0.4);
-}
-#loginBtn:hover, #createBtn:hover { 
-  background: linear-gradient(45deg, #007ACC, var(--color-primary-blue));
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 191, 255, 0.6);
-}
-
-/* Secondary Button (Quick Actions) */
-.quick-action-buttons {
-  display: none; 
-}
-
-/* RAM selector FIX: Kembali ke tampilan Select Dropdown */
-.ram-selector-container {
-    position: relative;
-    margin-bottom: 0px; 
-    padding: 0; 
-    border: none; 
-    background: none;
-}
-#serverRam {
-    /* Tampilkan Select asli */
-    display: block !important; 
-    padding: 15px 20px;
-    width: 100%;
-    box-sizing: border-box;
-    border-radius: 10px;
-    border: 1px solid var(--color-border-subtle);
-    background: var(--color-bg-dark);
-    color: var(--color-text-light);
-}
-#ramOptions {
-    /* Sembunyikan tombol-tombol kustom */
-    display: none;
-}
-
-.deleteBtn { 
-  background: none;
-  border: 1px solid var(--color-primary-red);
-  color: var(--color-primary-red);
-  margin-top:10px; 
-  padding: 10px 15px;
-  font-size: 13px;
-  width: auto;
-  display: block;
-  margin-left: auto;
-}
-.deleteBtn:hover { 
-  background: var(--color-primary-red);
-  color: #fff;
-}
-
-/* USER INFO LAMA (Hanya untuk login div) */
-.user-photo-container {
-  display: none; /* Sembunyikan div lama */
-}
-.user-photo {
-  display: none; /* Sembunyikan elemen lama */
-}
-.user-info {
-  display: none; /* Sembunyikan elemen lama */
-}
-
-/* NEW: TAMPILAN HEADER LOGIN BARU - Mengatur gambar background kotak di sini */
-.new-login-header {
-    text-align: center;
-    /* MODIFIKASI: Mengubah margin-top menjadi 0 agar menempel rata di atas card */
-    margin: 0 -35px 30px -35px; 
-    
-    /* **MODIFIKASI UTAMA: Menambahkan Background Gambar Kotak di SINI** */
-    background: url('https://files.catbox.moe/rj0qf4.jpg') center center no-repeat;
-    background-size: cover;
-    background-blend-mode: multiply; 
-    background-color: rgba(0, 0, 0, 0.3); /* Untuk overlay gelap */
-
-    /* Mengikuti radius card (top only) */
-    border-top-left-radius: 18px; 
-    border-top-right-radius: 18px;
-    border-bottom-left-radius: 0; 
-    border-bottom-right-radius: 0; 
-
-    position: relative;
-    overflow: hidden;
-    padding-top: 50px; 
-    padding-bottom: 30px; 
-    
-    /* Tambahkan gradien transparan di bawah agar memudar ke warna card (opsional) */
-    /* Pseudo-element AFTER untuk gradien transparan */
-    position: relative;
-}
-
-/* Pseudo-element AFTER untuk Gradien (membuat bagian bawah gambar memudar) */
-.new-login-header::after {
-    content: "";
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 50%; /* Seberapa jauh gradien memudar */
-    /* Warna gradien dari transparan ke warna card-dark */
-    background: linear-gradient(to top, var(--color-card-dark) 0%, transparent 100%);
-    z-index: 1; /* Di atas gambar tapi di bawah konten logo */
-    pointer-events: none;
-}
-/* Pastikan konten utama (logo, teks) tetap di atas gradien dan background */
-.new-login-header > * {
-    position: relative;
-    z-index: 2;
-}
-
-
-.login-header-image {
-    width: 120px; 
-    height: 120px; 
-    object-fit: cover;
-    display: block;
-    margin: 0 auto;
-    border-radius: 50%; 
-    border: 4px solid var(--color-primary-blue);
-    box-shadow: 0 0 15px rgba(0, 191, 255, 0.8); 
-}
-
-.login-info-box {
-    position: static; 
-    padding: 10px 0 0 0;
-    background: none; 
-}
-
-.login-info-title {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 1.5em;
-    font-weight: 700;
-    color: var(--color-text-light);
-    text-shadow: 0 0 8px rgba(0, 0, 0, 1); 
-}
-/* END NEW LOGIN HEADER CSS */
-
-
-/* NEW: HEADER PROFILE & NAVIGATION ICONS (NAILONG STYLE) */
-/* MENAMBAHKAN STYLING UNTUK SLIDER CONTAINER */
-.profile-header-nailong.slider-container {
-    height: 180px;
-    border-radius: 10px;
-    margin-bottom: 25px;
-    overflow: hidden; /* **PENTING** untuk menyembunyikan konten yang tidak ditampilkan */
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
-    position: relative; 
-    background: #000;
-}
-
-.slider-wrapper {
-    display: flex; /* **PENTING** untuk tata letak horizontal */
-    width: 200%; /* Disesuaikan dengan jumlah slide (2 slide = 200%) */
-    height: 100%;
-    transition: transform 0.3s ease-in-out; /* Animasi geser */
-}
-
-.slider-item {
-    min-width: 50%; /* Setiap item mengambil porsi yang sama (100% / jumlah slide) */
-    height: 100%;
-    position: relative;
-    display: flex; /* Untuk menempatkan overlay di dalamnya */
-    align-items: flex-end;
-}
-
-/* MODIFIKASI: Menambahkan overflow: hidden pada video-slide */
-.slider-item.video-slide {
-    overflow: hidden; 
-}
-
-
-/* Styling khusus untuk Slide 2 (Foto) */
-.slider-item.image-slide {
-    background-size: cover; 
-    background-position: center;
-}
-
-/* MENAMBAHKAN STYLING UNTUK VIDEO BACKGROUND */
-#headerVideo {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    /* Ganti dengan width dan height 100% agar terbatasi oleh parent (.video-slide) */
-    width: 100%; 
-    height: 100%;
-    
-    z-index: 1; /* Di belakang overlay */
-    
-    /* --- OPTIMASI SMOOTHNESS BARU --- */
-    will-change: transform, opacity; /* Tambah opacity untuk transisi fade-in */
-    transform: translate3d(-50%, -50%, 0); /* Memaksa Akselerasi GPU */
-    object-fit: cover; 
-    
-    opacity: 1; 
-    transition: opacity 0.8s ease-in-out; 
-    backface-visibility: hidden; 
-}
-
-.profile-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    /* OVERLAY HARUS DI ATAS VIDEO */
-    z-index: 2; 
-    background: linear-gradient(0deg, var(--color-card-dark) 0%, rgba(31, 32, 41, 0.1) 60%);
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-}
-.profile-username {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 1.8em;
-    font-weight: 700;
-    color: var(--color-text-light);
-    text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
-    margin-bottom: 5px;
-}
-.profile-version {
-    font-size: 0.9em;
-    color: var(--color-primary-blue);
-    font-weight: 600;
-}
-
-/* Styling untuk indikator dot */
-.slider-dots {
-    position: absolute;
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 5; /* Di atas overlay */
-    display: flex;
-    gap: 8px;
-}
-
-.dot {
-    height: 8px;
-    width: 8px;
-    background-color: rgba(255, 255, 255, 0.5);
-    border-radius: 50%;
-    display: inline-block;
-    cursor: pointer;
-    transition: background-color 0.3s, transform 0.3s;
-}
-
-.dot.active {
-    background-color: var(--color-primary-blue);
-    transform: scale(1.2);
-}
-/* END SLIDER CSS */
-
-
-/* New: ICON NAVIGATION GRID */
-.icon-navigation-grid {
-    display: flex;
-    justify-content: space-around;
-    gap: 15px;
-    margin-bottom: 30px;
-    padding: 0 10px;
-    text-align: center;
-}
-.nav-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-decoration: none;
-    color: var(--color-text-light);
-    font-size: 0.8em;
-    cursor: pointer;
-    width: 25%;
-}
-.nav-icon {
-    width: 55px;
-    height: 55px;
-    border-radius: 12px;
-    background: var(--color-card-dark);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 22px;
-    margin-bottom: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
-    transition: transform 0.2s;
-    border: 1px solid var(--color-border-subtle);
-}
-.nav-item:hover .nav-icon {
-    transform: scale(1.05);
-    background: var(--color-primary-blue);
-    color: #fff;
-    border-color: var(--color-primary-blue);
-}
-
-/* Specific Icon Colors (Optional, for visual) */
-.nav-icon.stats { background: #333; color: var(--color-primary-green); }
-.nav-icon.history { background: #333; color: #ffab00; }
-.nav-icon.whatsapp { background: #25D366; color: #fff; }
-.nav-icon.logout { background: #cc3333; color: #fff; }
-
-/* PERBAIKAN 2: Mengubah background agar tidak buram dan lebih solid */
 .info {
-  font-size: 13px;
-  line-height: 1.8;
-  margin-bottom: 25px;
-  /* Menggunakan warna background gelap solid, bukan rgba transparan */
-  background: var(--color-bg-dark); 
-  padding: 20px;
-  border-radius: 12px;
-  border: 1px solid var(--color-border-subtle);
-  border-left: 5px solid var(--color-primary-blue);
-  font-family: 'Inter', sans-serif;
-  color: var(--color-text-light);
-}
-.info strong {
-    color: var(--color-primary-blue);
+  font-size: 12px;
+  line-height: 1.4;
+  margin-bottom: 15px;
+  background: #0d1117;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #30363d;
 }
 
-/* SERVER STATUS */
 .server-status {
-  /* Hapus text-align: right agar bisa di tengah di login div */
-  text-align: right; 
+  text-align: center;
+  margin-bottom: 10px;
   font-size: 13px;
-  font-weight: 60;
 }
 .server-status span {
-  padding: 6px 15px;
-  border-radius: 8px;
-  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 5px;
+  font-weight: bold;
 }
-.online { 
-  background: var(--color-primary-green);
-  color: var(--color-card-dark);
-}
-.maintenance { 
-  background: var(--color-primary-red);
-  color: #fff;
-}
+.online { background-color: #2ea043; color: #fff; }
+.maintenance { background-color: #da3633; color: #fff; }
 
 #result {
-  font-family: 'Space Grotesk', monospace;
+  font-family: 'Poppins', sans-serif;
   white-space: pre-wrap;
-  margin-top: 25px;
-  background: var(--color-bg-dark);
-  padding: 20px;
-  border-radius: 12px;
-  max-height: 250px;
+  margin-top: 10px;
+  background: #0d1117;
+  padding: 10px;
+  border-radius: 8px;
+  max-height: 200px;
   overflow-y: auto;
-  border: 1px solid var(--color-border-subtle);
-  font-size: 14px;
-  border-left: 5px solid var(--color-primary-green);
+  border: 1px solid #30363d;
+  font-size: 13px;
 }
 
 .contact {
-  margin-top: 30px;
-  display: none; 
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  font-size: 22px;
+}
+.contact a {
+  color: #58a6ff;
+  transition: 0.3s;
+}
+.contact a:hover {
+  color: #1f6feb;
+  transform: scale(1.1);
 }
 
 #historySection { display: none; }
+#historyList {
+  max-height: 400px;
+  overflow-y: auto;
+  margin-top: 10px;
+}
+#historyList .card { margin-bottom: 10px; }
 
-/* TOP BAR MENU (Hamburger) */
-.panel-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    padding-top: 10px;
-}
-
-#menuToggleBtn {
-    background: none;
-    padding: 10px;
-    width: auto;
-    margin: 0;
-    font-size: 24px;
-    color: var(--color-primary-blue);
-    transition: color 0.3s;
-    border-radius: 8px;
-    z-index: 10;
-}
-#menuToggleBtn:hover {
-    color: #fff;
-    background: var(--color-border-subtle);
-    transform: none;
-    box-shadow: none;
-}
-/* Menyembunyikan user info lama di dalam #panel setelah header baru ditambahkan */
-#panel .user-photo-container {
-    display: none;
+/* TAMBAHAN UNTUK 3 BUTTON VERTIKAL */
+.button-group {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  margin-top: 15px;
+  justify-content: center;
 }
 
-/* SIDEBAR STYLES - NEW */
-.sidebar {
-    height: 100vh;
-    width: 280px;
-    position: fixed;
-    z-index: 20;
-    top: 0;
-    left: 0;
-    background-color: var(--color-card-dark);
-    box-shadow: 5px 0 15px rgba(0, 0, 0, 0.8);
-    padding-top: 20px;
-    transform: translateX(-100%);
-    transition: transform 0.3s ease-in-out;
-    border-right: 2px solid var(--color-border-subtle);
+.action-btn {
+  flex: 1;
+  padding: 12px 5px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: bold;
+  transition: 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
 }
 
-.sidebar.open {
-    transform: translateX(0);
+.action-btn i {
+  font-size: 14px;
 }
 
-.sidebar-content {
-    padding: 15px;
+.copy-user {
+  background: #1f6feb;
+  color: white;
 }
 
-.sidebar-header {
-    padding: 15px;
-    margin-bottom: 20px;
-    border-bottom: 1px solid var(--color-border-subtle);
-    font-size: 14px;
-    color: var(--color-primary-blue);
-    font-weight: 600;
-}
-.sidebar-header strong {
-    display: block;
-    font-size: 16px;
-    color: var(--color-text-light);
-    margin-top: 5px;
+.copy-user:hover {
+  background: #2c81ff;
 }
 
-.sidebar-menu a, .sidebar-menu button {
-    display: flex;
-    align-items: center;
-    padding: 12px 15px;
-    text-decoration: none;
-    color: var(--color-text-light);
-    font-size: 15px;
-    border-radius: 8px;
-    transition: background-color 0.2s;
-    background: none;
-    border: none;
-    width: 100%;
-    text-align: left;
-    cursor: pointer;
-    box-sizing: border-box;
-    margin-top: 0;
-}
-.sidebar-menu i {
-    margin-right: 10px;
-    font-size: 18px;
-    color: var(--color-primary-blue);
-}
-.sidebar-menu a:hover, .sidebar-menu button:hover {
-    background-color: var(--color-border-subtle);
+.open-panel {
+  background: #238636;
+  color: white;
 }
 
-.sidebar-menu .subheader {
-    margin-top: 20px;
-    padding: 10px 15px 5px 15px;
-    color: var(--color-border-subtle);
-    text-transform: uppercase;
-    font-size: 12px;
-    font-weight: 700;
+.open-panel:hover {
+  background: #2ea043;
 }
 
-/* Sub-menu (Contact Owner) */
-.sidebar-menu .menu-item.active {
-    background: rgba(0, 191, 255, 0.1);
-}
-.sidebar-menu .menu-item.active i {
-    color: #fff;
+.copy-pass {
+  background: #da3633;
+  color: white;
 }
 
-#contactSubMenu {
-    padding-left: 10px;
-    display: none;
-}
-#contactSubMenu.show {
-    display: block;
-}
-#contactSubMenu a {
-    padding-left: 40px; 
-    font-size: 14px;
-    margin-top: 5px;
-}
-#contactSubMenu i {
-    font-size: 15px;
-}
-.whatsapp-channel i { color: #25D366; }
-.whatsapp-support i { color: #3DDC84; }
-.telegram-link i { color: #0088CC; }
-
-/* Overlay untuk menutup sidebar */
-.overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 15;
-    display: none;
+.copy-pass:hover {
+  background: #f85149;
 }
 
-/* --- PERBAIKAN: Menyembunyikan elemen audio sepenuhnya --- */
-#backgroundMusic {
-    display: none !important; 
-    width: 0;
-    height: 0;
+.action-btn:active {
+  transform: scale(0.98);
+}
+
+/* ====================== */
+/* CUSTOM MODAL & TOAST */
+/* ====================== */
+
+.custom-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+  background: linear-gradient(135deg, #161b22 0%, #0d1117 100%);
+  width: 90%;
+  max-width: 400px;
+  border-radius: 16px;
+  padding: 25px;
+  border: 1px solid rgba(88, 166, 255, 0.2);
+  box-shadow: 
+    0 20px 60px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(88, 166, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  transform: translateY(0);
+  animation: modalSlideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.modal-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.modal-icon.warning {
+  background: linear-gradient(135deg, #da3633, #f85149);
+  color: white;
+}
+
+.modal-icon.success {
+  background: linear-gradient(135deg, #238636, #2ea043);
+  color: white;
+}
+
+.modal-icon.info {
+  background: linear-gradient(135deg, #1f6feb, #2c81ff);
+  color: white;
+}
+
+.modal-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 18px;
+  color: white;
+  margin: 0;
+}
+
+.modal-message {
+  color: #c9d1d9;
+  line-height: 1.6;
+  margin-bottom: 25px;
+  font-size: 14px;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.modal-btn {
+  flex: 1;
+  padding: 12px 20px;
+  border-radius: 10px;
+  border: none;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.modal-btn-cancel {
+  background: rgba(88, 166, 255, 0.15);
+  color: #58a6ff;
+  border: 1px solid rgba(88, 166, 255, 0.3);
+}
+
+.modal-btn-cancel:hover {
+  background: rgba(88, 166, 255, 0.25);
+  transform: translateY(-2px);
+}
+
+.modal-btn-confirm {
+  background: linear-gradient(90deg, #238636, #2ea043);
+  color: white;
+}
+
+.modal-btn-confirm:hover {
+  background: linear-gradient(90deg, #2ea043, #3fb950);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 20px rgba(46, 160, 67, 0.3);
+}
+
+.modal-btn-delete {
+  background: linear-gradient(90deg, #da3633, #f85149);
+  color: white;
+}
+
+.modal-btn-delete:hover {
+  background: linear-gradient(90deg, #f85149, #ff6b6b);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 20px rgba(218, 54, 51, 0.3);
+}
+
+/* TOAST NOTIFICATION */
+.custom-toast {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: linear-gradient(135deg, #161b22, #0d1117);
+  padding: 15px 20px;
+  border-radius: 12px;
+  border-left: 4px solid #2ea043;
+  box-shadow: 
+    0 10px 30px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(46, 160, 67, 0.2);
+  max-width: 350px;
+  transform: translateX(100%);
+  opacity: 0;
+  transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.custom-toast.show {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.toast-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.toast-icon.success {
+  background: linear-gradient(135deg, #238636, #2ea043);
+  color: white;
+}
+
+.toast-icon.error {
+  background: linear-gradient(135deg, #da3633, #f85149);
+  color: white;
+}
+
+.toast-icon.info {
+  background: linear-gradient(135deg, #1f6feb, #2c81ff);
+  color: white;
+}
+
+.toast-message {
+  color: #c9d1d9;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* ANIMATIONS */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modalSlideUp {
+  from {
     opacity: 0;
-    position: absolute; 
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
-/* --- END PERBAIKAN --- */
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/* SECURITY STYLES */
+.password-masked {
+  font-family: 'Courier New', monospace;
+  letter-spacing: 2px;
+  background: #1c1c1c;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.password-masked:hover {
+  background: #2a2a2a;
+}
+
+.security-warning {
+  border: 1px solid #f0a73a;
+  background: rgba(240, 167, 58, 0.1);
+  padding: 8px;
+  border-radius: 6px;
+  margin: 10px 0;
+  font-size: 12px;
+}
 
 @media(max-width: 500px){
-  body {
-    padding: 10px;
-  }
   .card {
-    width: 100%;
-    /* Atur ulang padding dan margin di mobile */
-    padding: 25px; 
+    width: 95%;
+    padding: 20px;
   }
-  #loginDiv {
-      /* MODIFIKASI MOBILE: Sesuaikan padding tanpa padding atas */
-      padding: 0 25px 25px 25px;
-      margin: 0;
-      /* Hapus padding-top dan biarkan padding: 25px; */
+  .button-group {
+    flex-direction: column;
   }
-  
-  /* Sesuaikan margin header untuk mobile */
-  .new-login-header {
-      /* MODIFIKASI MOBILE: Sesuaikan margin-top menjadi 0 */
-      margin: 0 -25px 30px -25px; 
+  .modal-content {
+    width: 95%;
+    padding: 20px;
+  }
+  .modal-buttons {
+    flex-direction: column;
+  }
+  .custom-toast {
+    left: 20px;
+    right: 20px;
+    max-width: none;
   }
 }
 </style>
 </head>
 <body> 
-<div class="overlay" id="sidebarOverlay"></div>
-
-<div class="sidebar" id="mainSidebar">
-    <div class="sidebar-header">
-        RISKY HOSTING
-        <strong id="sidebarUsername">Risky Hosting</strong>
+<!-- CUSTOM MODAL -->
+<div id="customModal" class="custom-modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div id="modalIcon" class="modal-icon warning">
+        <i class="fas fa-exclamation-triangle"></i>
+      </div>
+      <h3 id="modalTitle" class="modal-title">Konfirmasi</h3>
     </div>
-    <div class="sidebar-menu">
-        <a href="#" class="menu-item active-menu">
-            <i class="fas fa-desktop"></i> Menu Halaman
-        </a>
-        
-        <button id="toggleContactMenu" class="menu-item">
-            <i class="fas fa-address-book"></i> Contact Owner
-        </button>
-        
-        <div id="contactSubMenu">
-            <a href="https://t.me/angelhostingg" target="_blank" class="whatsapp-support">
-                <i class="fab fa-telegram"></i> Telegram CS
-            </a>
-            <a href="https://whatsapp.com/channel/0029VakX8k0KGGGGka6PFN00" target="_blank" class="whatsapp-channel">
-                <i class="fab fa-whatsapp"></i> Saluran WhatsApp
-            </a>
-            <a href="https://t.me//angelhostingg" target="_blank" class="telegram-link">
-                <i class="fab fa-telegram-plane"></i> Telegram
-            </a>
-        </div>
-
-        <div class="subheader">AKSI LAIN</div>
-        <button onclick="document.getElementById('listBtn').click(); closeSidebar();">
-            <i class="fas fa-chart-bar"></i> Lihat Jumlah Server
-        </button>
-        <button onclick="document.getElementById('historyBtn').click(); closeSidebar();">
-            <i class="fas fa-history"></i> Riwayat Server
-        </button>
-        <button onclick="document.getElementById('logoutBtn').click(); closeSidebar();" style="color:var(--color-primary-red);">
-            <i class="fas fa-sign-out-alt"></i> Logout
-        </button>
+    <p id="modalMessage" class="modal-message">Pesan konfirmasi akan muncul di sini</p>
+    <div class="modal-buttons">
+      <button id="modalCancel" class="modal-btn modal-btn-cancel">
+        <i class="fas fa-times"></i> Batal
+      </button>
+      <button id="modalConfirm" class="modal-btn modal-btn-confirm">
+        <i class="fas fa-check"></i> Lanjutkan
+      </button>
     </div>
+  </div>
 </div>
 
+<!-- CUSTOM TOAST -->
+<div id="customToast" class="custom-toast">
+  <div id="toastIcon" class="toast-icon success">
+    <i class="fas fa-check"></i>
+  </div>
+  <p id="toastMessage" class="toast-message">Pesan notifikasi</p>
+</div>
+
+<!-- LOGIN PANEL -->
 <div class="card" id="loginDiv">
-  <div class="new-login-header">
-    <img src="https://qu.ax/lJYak.jpg" alt="Profile Header" class="login-header-image">
-    <div class="login-info-box">
-        <div class="login-info-title">RISKY HOSTING</div>
-        <div class="server-status" id="serverStatus" style="margin-top: 10px; text-align: center;">Checking server...</div> 
-    </div>
+  <div class="server-status" id="serverStatus">Checking server...</div>
+  <h1>Reseller Panel Login</h1>
+  <input type="text" id="username" placeholder="Username">
+  <div style="position: relative; width: 100%;">
+  <input type="password" id="password" placeholder="Password" autocomplete="off" style="width: 100%;">
   </div>
-  
-  <h1 style="font-size: 1.8em; margin-bottom: 20px;">Create Panel Login</h1>
+  <button id="loginBtn">Login</button>
+  <div id="loginError" style="color:red; text-align:center; margin-top:5px;"></div>
 
-  
-  <div class="input-group">
-    <div class="input-label">Username</div>
-    <input type="text" id="username" placeholder="Enter your username">
-  </div>
-  
-  <div class="input-group">
-    <div class="input-label">Password</div>
-    <input type="password" id="password" placeholder="Enter your password">
-  </div>
-  
-  <button id="loginBtn">🔒 Login</button> <div id="loginError" style="color:#f85149; text-align:center; margin-top:10px; font-size:13px;"></div>
-
-  <div class="register-link">
+  <div style="text-align:center; margin-top:15px; font-size:13px;">
     Belum punya akun? 
-    <br>
-    <a href="https://t.me/angelhostingg" target="_blank" style="color: #00BFFF;"> <b><i class="fab fa-telegram"></i> Beli Sekarang (Telegram)</b>
-    </a>
-    <br>
-    <a href="https://whatsapp.com/channel/0029VakX8k0KGGGGka6PFN00" target="_blank" style="color: #00BFFF;"> <b><i class="fas fa-bullhorn"></i> Saluran Owner (WhatsApp)</b>
+    <a href="https://t.me/angelhostingg" target="_blank" style="color:#58a6ff; text-decoration:none;">
+      <b>Beli sekarang</b>
     </a>
   </div>
 </div>
 
-
+<!-- CPANEL UTAMA -->
 <div class="card" id="panel" style="display:none;">
-  <div class="panel-header">
-    <button id="menuToggleBtn" title="Menu Panel">
-        <i class="fas fa-bars"></i>
-    </button>
-    <div class="server-status" id="serverStatusPanel">Checking server...</div>
-  </div>
-  
-  <div class="profile-header-nailong slider-container">
-    <div class="slider-wrapper" id="headerSliderWrapper">
-        
-        <div class="slider-item video-slide">
-            <video autoplay muted loop playsinline preload="auto" id="headerVideo"> 
-              <source src="https://files.catbox.moe/aokrcz.mp4" type="video/mp4">
-              Browser Anda tidak mendukung tag video.
-            </video>
-            <div class="profile-overlay">
-                <div class="profile-username" id="panelUsernameDisplay">RISKY HOSTING</div>
-                <div class="profile-version">VERSION 2.0</div>
-            </div>
-        </div>
-        
-        <div class="slider-item image-slide" style="background-image: url('https://files.catbox.moe/r7whcq.jpg');">
-            <div class="profile-overlay">
-                <div class="profile-username">RISKY HOSTING</div>
-                <div class="profile-version">VERSION 2.0</div>
-            </div>
-        </div>
-        
-    </div>
-    
-    <div class="slider-dots" id="sliderDots">
-        <span class="dot active"></span>
-        <span class="dot"></span>
-    </div>
-  </div>
-  <div class="icon-navigation-grid">
-    <a class="nav-item" id="listBtnNav">
-        <div class="nav-icon stats"><i class="fas fa-chart-bar"></i></div>
-        <span>Stats</span>
-    </a>
-    
-    <a class="nav-item" id="historyBtnNav">
-        <div class="nav-icon history"><i class="fas fa-history"></i></div>
-        <span>Riwayat</span>
-    </a>
-
-    <a href="https://t.me/angelhostingg" target="_blank" class="nav-item">
-        <div class="nav-icon telegram"><i class="fab fa-telegram"></i></div>
-        <span>Owner</span>
-    </a>
-
-    <a class="nav-item" id="logoutBtnNav">
-        <div class="nav-icon logout"><i class="fas fa-sign-out-alt"></i></div>
-        <span>Logout</span>
-    </a>
-  </div>
+  <div class="server-status" id="serverStatusPanel">Checking server...</div>
   <div class="info">
-    📍 **ᴄᴀᴛᴀᴛᴀɴ ᴘᴇɴᴛɪɴɢ:**
-    <br>• ᴘᴀɴᴇʟ ᴊᴀɴɢᴀɴ ᴅɪ ᴅᴅᴏꜱ
-    <br>• ᴛᴜᴛᴜᴘɪ ᴅᴏᴍᴀɪɴ ᴘᴀɴᴇʟ ᴋᴇᴛɪᴋᴀ ᴅɪ ꜱᴄʀᴇᴇɴꜱʜᴏᴛ
-    <br>• ᴅᴏᴍᴀɪɴ ᴘᴀɴᴇʟ ᴊᴀɴɢᴀɴ ᴅɪ ꜱᴇʙᴀʀ
-    <br>• ᴇxᴘɪʀᴇᴅ ᴘᴀɴᴇʟ ±𝟣 ʙᴜʟᴀɴ ᴘᴇɴᴜʜ
-    <br>• ʙɪᴋɪɴ ꜱᴇʀᴠᴇʀ ʜᴀʀᴜꜱ ᴅɪᴘᴀᴋᴀɪI
-    <br>• ᴊɪᴋᴀ ᴜꜱᴇʀ ɴᴀᴍᴇ/ᴘᴡ ʙᴇʀᴜʙᴀʜ = ᴘᴛ" 𝟥ᴋ
+    📍 ᴄᴀᴛᴀᴛᴀɴ ᴘᴇɴᴛɪɴɢ:
+    <br>• PANEL JANGAN DI DDOS
+    <br>• TUTUPI DOMAIN PANEL KETIKA DI SCREENSHOT
+    <br>• DOMAIN PANEL JANGAN DI SEBAR
+    <br>• ALL TRANSAKSI NO REFUND
+    <br>• EXPIRED PANEL ±1 BULAN PENUH
+    <br>• BIKIN SERVER HARUS DIPAKAI
+    <br>• MASUK GRUB INFORMATION (IKON WHATSAPP DIBAWAH) UNTUK UPDATE STATUS
   </div>
-  
-  <h2>Create Panel</h2>
-  
-  <div class="input-group">
-    <div class="input-label">Nama Server</div>
-    <input type="text" id="serverName" placeholder="Masukkan nama server" maxlength="20">
-  </div>
-  
-  <div class="input-group">
-    <div class="input-label">Pilih RAM</div>
-    <div class="ram-selector-container">
-        <select id="serverRam"></select> 
-        
-        <div id="ramOptions">
-            </div>
-    </div>
-  </div>
-  
-  <button id="createBtn">🎯 Create Panel</button>
-  
-  <div class="quick-action-buttons">
-    <button id="listBtn">📊 Lihat Jumlah Server</button>
-    <button id="historyBtn">📋 Lihat Riwayat</button>
-  </div>
-  
+  <h2>Buat Server</h2>
+  <input type="text" id="serverName" placeholder="Nama Server" maxlength="20">
+  <select id="serverRam"></select>
+  <button id="createBtn">Buat Server</button>
+  <button id="listBtn">Lihat Jumlah Server</button>
+  <button id="historyBtn">Lihat Riwayat</button>
   <div id="result"></div>
   
-  <button id="logoutBtn" style="margin-top:15px; display: none;">🚪 Logout</button>
+  <div id="actionButtons" class="button-group" style="display: none;">
+    <button class="action-btn copy-user" id="copyUserBtn">
+      <i class="fas fa-user"></i> Copy User
+    </button>
+    <button class="action-btn open-panel" id="openPanelBtn">
+      <i class="fas fa-external-link-alt"></i> Buka Panel
+    </button>
+    <button class="action-btn copy-pass" id="copyPassBtn">
+      <i class="fas fa-key"></i> Copy Pass
+    </button>
+  </div>
   
+  <button id="logoutBtn" style="margin-top:10px;">Logout</button>
   <div class="contact">
-    <a href="https://whatsapp.com/channel/0029VakX8k0KGGGGka6PFN00" target="_blank" title="WhatsApp Channel">
-      <i class="fab fa-whatsapp"></i>
-    </a>
-    <a href="https://t.me/angelhostingg" target="_blank" title="Customer Support">
-      <i class="fas fa-headset"></i>
-    </a>
+    <a href="https://chat.whatsapp.com/CoY2paBPem72BNAPvAjgyJ" target="_blank"><i class="fab fa-whatsapp"></i></a>
+    <a href="https://www.bimxyz.my.id" target="_blank"><i class="fas fa-headset"></i></a>
   </div>
 </div>
 
+<!-- RIWAYAT SERVER -->
 <div class="card" id="historySection">
-  <h2>📜 Riwayat Server</h2>
+  <h2>Riwayat Server</h2>
   <div id="historyList"></div>
-  <button id="backBtn">⬅️ Kembali ke Panel</button>
+  <button id="backBtn">Kembali</button>
 </div>
 
-<audio id="backgroundMusic" loop preload="auto" muted>
-    <source src="https://files.catbox.moe/iodhjt.mp3" type="audio/mp3">
-    Browser Anda tidak mendukung elemen audio.
-</audio>
-
 <script>
+// ======================
+// SIMPLE SECURITY CONFIG
+// ======================
+let currentSessionId = localStorage.getItem('session_id') || '';
+let loginAttemptCount = 0;
+const MAX_LOGIN_ATTEMPTS = 5;
+
+// ======================
+// CUSTOM ALERT SYSTEM
+// ======================
+const customModal = document.getElementById('customModal');
+const modalTitle = document.getElementById('modalTitle');
+const modalMessage = document.getElementById('modalMessage');
+const modalIcon = document.getElementById('modalIcon');
+const modalCancel = document.getElementById('modalCancel');
+const modalConfirm = document.getElementById('modalConfirm');
+
+const customToast = document.getElementById('customToast');
+const toastMessage = document.getElementById('toastMessage');
+const toastIcon = document.getElementById('toastIcon');
+
+let currentResolve = null;
+
+function showConfirm(title, message, type = 'warning', confirmText = 'Lanjutkan') {
+  return new Promise((resolve) => {
+    modalTitle.textContent = title;
+    modalMessage.textContent = message;
+    currentResolve = resolve;
+    
+    modalIcon.className = 'modal-icon ' + type;
+    const iconClass = {
+      warning: 'fas fa-exclamation-triangle',
+      danger: 'fas fa-trash-alt',
+      info: 'fas fa-info-circle',
+      success: 'fas fa-check-circle'
+    }[type] || 'fas fa-exclamation-triangle';
+    
+    modalIcon.innerHTML = `<i class="${iconClass}"></i>`;
+    
+    modalConfirm.className = `modal-btn ${type === 'danger' ? 'modal-btn-delete' : 'modal-btn-confirm'}`;
+    modalConfirm.innerHTML = `<i class="fas fa-check"></i> ${confirmText}`;
+    
+    customModal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  });
+}
+
+function showToast(message, type = 'success', duration = 3000) {
+  toastMessage.textContent = message;
+  toastIcon.className = 'toast-icon ' + type;
+  
+  const iconClass = {
+    success: 'fas fa-check',
+    error: 'fas fa-times-circle',
+    info: 'fas fa-info-circle',
+    warning: 'fas fa-exclamation-triangle'
+  }[type] || 'fas fa-check';
+  
+  toastIcon.innerHTML = `<i class="${iconClass}"></i>`;
+  
+  const borderColor = {
+    success: '#2ea043',
+    error: '#da3633',
+    info: '#1f6feb',
+    warning: '#f0a73a'
+  }[type] || '#2ea043';
+  
+  customToast.style.borderLeftColor = borderColor;
+  customToast.classList.add('show');
+  
+  setTimeout(() => {
+    customToast.classList.remove('show');
+  }, duration);
+}
+
+modalCancel.addEventListener('click', () => {
+  customModal.style.display = 'none';
+  document.body.style.overflow = 'auto';
+  if (currentResolve) {
+    currentResolve(false);
+    currentResolve = null;
+  }
+});
+
+modalConfirm.addEventListener('click', () => {
+  customModal.style.display = 'none';
+  document.body.style.overflow = 'auto';
+  if (currentResolve) {
+    currentResolve(true);
+    currentResolve = null;
+  }
+});
+
+customModal.addEventListener('click', (e) => {
+  if (e.target === customModal) {
+    customModal.style.display = 'none';
+    document.body.style.overflow = 'auto';
+    if (currentResolve) {
+      currentResolve(false);
+      currentResolve = null;
+    }
+  }
+});
+
+// ======================
+// UI ELEMENTS
+// ======================
 const loginDiv = document.getElementById('loginDiv');
 const panel = document.getElementById('panel');
 const historySection = document.getElementById('historySection');
@@ -900,526 +690,477 @@ const resultDiv = document.getElementById('result');
 const serverStatus = document.getElementById('serverStatus');
 const serverStatusPanel = document.getElementById('serverStatusPanel');
 const ramSelect = document.getElementById('serverRam');
-const listBtn = document.getElementById('listBtn'); 
 const historyBtn = document.getElementById('historyBtn');
-const logoutBtn = document.getElementById('logoutBtn');
-
 const historyList = document.getElementById('historyList');
 const backBtn = document.getElementById('backBtn');
-const ramOptionsDiv = document.getElementById('ramOptions');
-const menuToggleBtn = document.getElementById('menuToggleBtn');
-const mainSidebar = document.getElementById('mainSidebar');
-const sidebarOverlay = document.getElementById('sidebarOverlay');
-const toggleContactMenu = document.getElementById('toggleContactMenu');
-const contactSubMenu = document.getElementById('contactSubMenu');
-const sidebarUsername = document.getElementById('sidebarUsername');
-const panelUsernameDisplay = document.getElementById('panelUsernameDisplay');
 
-const listBtnNav = document.getElementById('listBtnNav');
-const historyBtnNav = document.getElementById('historyBtnNav');
-const logoutBtnNav = document.getElementById('logoutBtnNav');
-const headerVideo = document.getElementById('headerVideo'); 
+let currentServerData = null;
+const actionButtons = document.getElementById('actionButtons');
+const copyUserBtn = document.getElementById('copyUserBtn');
+const openPanelBtn = document.getElementById('openPanelBtn');
+const copyPassBtn = document.getElementById('copyPassBtn');
 
-// --- START OF MODIFIED CODE FOR BACKGROUND MUSIC ---
-const backgroundMusic = document.getElementById('backgroundMusic');
+// ======================
+// RAM OPTIONS
+// ======================
+const ramOptions = [
+  {display: '🔰 1 GB RAM', value: '1'},
+  {display: '🔰 2 GB RAM', value: '2'},
+  {display: '🔰 3 GB RAM', value: '3'},
+  {display: '🔰 4 GB RAM', value: '4'},
+  {display: '🔰 5 GB RAM', value: '5'},
+  {display: '🔰 6 GB RAM', value: '6'},
+  {display: '🔰 7 GB RAM', value: '7'},
+  {display: '🔰 8 GB RAM', value: '8'},
+  {display: '🔰 9 GB RAM', value: '9'},
+  {display: '🔰 10 GB RAM', value: '10'},
+  {display: '🚀 UNLIMITED RAM', value: 'unlimited'}
+];
 
-// Fungsi yang mencoba memutar musik (dipicu oleh interaksi user: klik Login)
-function playBackgroundMusic() {
-    if (backgroundMusic) {
-        // Coba batalkan mute dan mainkan musik karena dipicu oleh klik user (Login)
-        backgroundMusic.muted = false; 
-        backgroundMusic.volume = 0.5; // Atur volume 50%
-        
-        const playPromise = backgroundMusic.play();
-
-        if (playPromise !== undefined) {
-            playPromise.then(() => {
-                console.log("Musik berhasil diputar setelah klik login.");
-            }).catch(error => {
-                // Autoplay diblokir, kembalikan ke kondisi muted
-                console.warn("Musik gagal diputar (Autoplay diblokir):", error);
-                backgroundMusic.muted = true;
-                // Anda mungkin perlu menambahkan tombol Unmute di panel untuk kasus ini
-            });
-            return playPromise; // Mengembalikan promise untuk tracking
-        }
-    }
-}
-// --- END OF MODIFIED CODE FOR BACKGROUND MUSIC ---
-
-
-// Data RAM Options 
-const ramData = ['1 GB','2 GB','3 GB','4 GB','5 GB','6 GB','7 GB','8 GB','9 GB','10 GB','Unlimited RAM'];
-
-// BAGIAN 1: Mengisi elemen <select> ASLI 
-ramData.forEach((val,i)=>{
+ramSelect.innerHTML = '<option value="" disabled selected>🎯 Pilih kapasitas RAM...</option>';
+ramOptions.forEach((item) => {
   const opt = document.createElement('option');
-  // Logika value: 1, 2, 3, ... 'unlimited'
-  opt.value = i === 10 ? 'unlimited' : (i + 1); 
-  opt.textContent = val;
+  opt.value = item.value;
+  opt.textContent = item.display;
   ramSelect.appendChild(opt);
 });
 
-// FUNGSI SIDEBAR MENU
-function openSidebar() {
-    mainSidebar.classList.add('open');
-    sidebarOverlay.style.display = 'block';
-}
-
-function closeSidebar() {
-    mainSidebar.classList.remove('open');
-    sidebarOverlay.style.display = 'none';
-}
-
-menuToggleBtn.addEventListener('click', openSidebar);
-sidebarOverlay.addEventListener('click', closeSidebar);
-
-// FUNGSI Toggle Contact Menu (Sub-Menu)
-toggleContactMenu.addEventListener('click', () => {
-    contactSubMenu.classList.toggle('show');
-    toggleContactMenu.classList.toggle('active');
-});
-
-// **START: SOLUSI JAVASCRIPT UNTUK AUTOPLAY VIDEO & ANIMASI CARD**
-document.addEventListener('DOMContentLoaded', function() {
-    // Coba memutar video secara paksa setelah DOMContentLoaded
-    if (headerVideo) {
-        // Coba putar video (muted)
-        const playPromise = headerVideo.play();
-
-        // Jika .play() mengembalikan Promise 
-        if (playPromise !== undefined) {
-            playPromise.then(() => {
-                console.log("Video berhasil autoplay (muted).");
-            }).catch(error => {
-                console.warn("Autoplay video mungkin diblokir, namun seharusnya terlihat karena CSS opacity: 1.");
-            });
-        }
-    }
-    
-    // Logika animasi card yang sudah ada
-    const cards = document.querySelectorAll('.card');
-    cards.forEach(card => {
-      card.style.opacity = '0';
-      card.style.transform = 'translateY(20px)';
-    });
-    
-    setTimeout(() => {
-      cards.forEach(card => {
-        card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-        card.style.opacity = '1';
-        card.style.transform = 'translateY(0)';
-      });
-    }, 100);
-    
-    // --- INISIALISASI SLIDER SETELAH DOM READY ---
-    // Pastikan fungsi ini dipanggil saat DOM sudah siap
-    // Ini juga dipanggil di fungsi touchEnd untuk update
-    updateDots(); 
-    window.addEventListener('resize', () => {
-        // Re-calculate lebar item jika ukuran layar berubah
-        const newSlideWidth = document.querySelector('.slider-item').clientWidth;
-        currentTranslate = currentSlide * -newSlideWidth;
-        setSliderPosition();
-    });
-});
-// **END: SOLUSI JAVASCRIPT UNTUK AUTOPLAY VIDEO & ANIMASI CARD**
-
-
-// Check server status (KODE ASLI)
+// ======================
+// SERVER STATUS CHECK
+// ======================
 (async () => {
   try {
     const res = await fetch('/api/server');
     const data = await res.json();
-    const statusHTML = `<span class="${data.success?'online':'maintenance'}">${data.success?'🟢 ONLINE':'🔴 MAINTENANCE'}</span>`;
+    const statusHTML = `<span class="${data.success?'online':'maintenance'}">${data.success?'ONLINE':'OFFLINE'}</span>`;
     serverStatus.innerHTML = statusHTML;
     serverStatusPanel.innerHTML = statusHTML;
   } catch {
-    const offlineHTML = `<span class="maintenance">🔴 MAINTENANCE</span>`;
+    const offlineHTML = `<span class="maintenance">OFFLINE</span>`;
     serverStatus.innerHTML = offlineHTML;
     serverStatusPanel.innerHTML = offlineHTML;
   }
 })();
 
-// === Auto login dengan cek expire 20 menit === (KODE ASLI)
-(function checkLogin(){
-  const username = localStorage.getItem('username');
-  const loginTime = localStorage.getItem('loginTime');
+// ======================
+// ACTION BUTTONS
+// ======================
+function showActionButtons(data) {
+  currentServerData = data;
+  actionButtons.style.display = 'flex';
+}
+
+function hideActionButtons() {
+  actionButtons.style.display = 'none';
+  currentServerData = null;
+}
+
+copyUserBtn.addEventListener('click', () => {
+  if (!currentServerData || !currentServerData.username) return;
+  navigator.clipboard.writeText(currentServerData.username)
+    .then(() => showToast(`Username "${currentServerData.username}" berhasil disalin`, 'success'))
+    .catch(err => {
+      console.error('Copy failed:', err);
+      showToast('Gagal menyalin username', 'error');
+    });
+});
+
+openPanelBtn.addEventListener('click', () => {
+  if (!currentServerData || !currentServerData.panel) return;
+  window.open(currentServerData.panel, '_blank');
+});
+
+copyPassBtn.addEventListener('click', () => {
+  if (!currentServerData || !currentServerData.password) return;
+  navigator.clipboard.writeText(currentServerData.password)
+    .then(() => showToast('Password berhasil disalin ke clipboard', 'success'))
+    .catch(err => {
+      console.error('Copy failed:', err);
+      showToast('Gagal menyalin password', 'error');
+    });
+});
+
+// ======================
+// SESSION CHECK (MODIFIED)
+// ======================
+function checkLogin(){
+  currentSessionId = localStorage.getItem('session_id') || '';
   
-  if(username && loginTime){
-    const loginDate = new Date(loginTime);
-    const now = new Date();
-    const diffMinutes = (now - loginDate) / 60000;
-    
-    if(diffMinutes >= 20){
-      localStorage.removeItem('username');
-      localStorage.removeItem('loginTime');
+  if(currentSessionId){
+    // Verifikasi session dengan server
+    fetch('/api/server', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        action: 'verify',
+        session_id: currentSessionId
+      })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if(data.success){
+        loginDiv.style.display='none';
+        panel.style.display='block';
+      } else {
+        // Session invalid
+        localStorage.removeItem('session_id');
+        currentSessionId = '';
+        loginDiv.style.display='block';
+        panel.style.display='none';
+        hideActionButtons();
+      }
+    })
+    .catch(() => {
+      // Jika error, tetap logout untuk safety
+      localStorage.removeItem('session_id');
+      currentSessionId = '';
       loginDiv.style.display='block';
       panel.style.display='none';
-    } else {
-      loginDiv.style.display='none';
-      panel.style.display='block';
-      // Update sidebar username saat berhasil login
-      sidebarUsername.textContent = username;
-      panelUsernameDisplay.textContent = username; // UPDATE NAMA DI HEADER PANEL BARU
-      
-      // Coba putar musik saat auto-login (tidak dijamin berfungsi)
-      // playBackgroundMusic(); 
-    }
+      hideActionButtons();
+    });
   } else {
     loginDiv.style.display='block';
     panel.style.display='none';
+    hideActionButtons();
   }
-})();
+}
 
-// Interval checker tiap menit (KODE ASLI)
-setInterval(()=>{
-  const loginTime = localStorage.getItem('loginTime');
-  if(loginTime){
-    const now = new Date();
-    const diffMinutes = (now - new Date(loginTime)) / 60000;
-    if(diffMinutes >= 20){
-      localStorage.removeItem('username');
-      localStorage.removeItem('loginTime');
-      location.reload();
-    }
-  }
-}, 60000);
+// Check session on load
+checkLogin();
 
-// MODIFIKASI: Login (Memaksa putar musik segera setelah klik)
+// Auto-check session setiap 30 detik
+setInterval(checkLogin, 30000);
+
+// ======================
+// LOGIN HANDLER (MODIFIED)
+// ======================
 loginBtn.addEventListener('click', async ()=>{
   const username = document.getElementById('username').value.trim();
   const password = document.getElementById('password').value.trim();
   loginError.textContent="";
-  loginError.style.display = "none";
   
-  if(!username || !password) {
-    loginError.textContent = "Username dan password harus diisi!";
-    loginError.style.display = "block";
+  // Rate limiting check
+  loginAttemptCount++;
+  if(loginAttemptCount > MAX_LOGIN_ATTEMPTS){
+    loginError.textContent = "Terlalu banyak percobaan login. Coba lagi nanti.";
+    showToast('Terlalu banyak percobaan login', 'error');
     return;
   }
   
-  loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
-  loginBtn.disabled = true;
-
-  // 💥 MODIFIKASI UTAMA: Coba putar musik segera setelah tombol diklik
-  const musicPromise = playBackgroundMusic(); 
-
   try{
     const res = await fetch('/api/server',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({action:'login', username, password})
+      body:JSON.stringify({
+        action:'login', 
+        username, 
+        password
+      })
     });
     const data = await res.json();
+    
     if(data.success){
+      // Reset attempt counter
+      loginAttemptCount = 0;
+      
+      // Save session ID
+      if(data.session_id){
+        localStorage.setItem('session_id', data.session_id);
+        currentSessionId = data.session_id;
+      }
+      
       const now = new Date();
       localStorage.setItem('username', username);
       localStorage.setItem('loginTime', now.toISOString());
+      
       loginDiv.style.display='none';
       panel.style.display='block';
+      hideActionButtons();
       
-      // Update user info
-      // document.querySelectorAll('.user-info')[0].textContent = `${username} - Requime Digital Store`; // Baris ini tidak perlu karena header lama sudah dihapus
-      sidebarUsername.textContent = username; // Update sidebar username
-      panelUsernameDisplay.textContent = username; // UPDATE NAMA DI HEADER PANEL BARU
+      showToast('Login berhasil!', 'success');
     } else {
-      // JIKA GAGAL: Jeda musik dan kembalikan ke muted
-      if (musicPromise && backgroundMusic) {
-          backgroundMusic.pause();
-          backgroundMusic.currentTime = 0;
-          backgroundMusic.muted = true; 
+      loginError.textContent = data.message || "Login gagal";
+      
+      // Show attempts left
+      const attemptsLeft = MAX_LOGIN_ATTEMPTS - loginAttemptCount;
+      if(attemptsLeft > 0){
+        showToast(`Login gagal. Sisa percobaan: ${attemptsLeft}`, 'error');
+      } else {
+        showToast('Terlalu banyak percobaan login', 'error');
       }
-      loginError.textContent = data.message;
-      loginError.style.display = "block";
     }
-  }catch(err){ 
-    // JIKA ERROR: Jeda musik dan kembalikan ke muted
-    if (musicPromise && backgroundMusic) {
-        backgroundMusic.pause();
-        backgroundMusic.currentTime = 0;
-        backgroundMusic.muted = true;
-    }
-    loginError.textContent = "Koneksi gagal. Coba lagi nanti.";
-    loginError.style.display = "block";
+  }catch(err){
+    loginError.textContent = err.message;
+    showToast('Error koneksi server', 'error');
+  }
+});
+
+// ======================
+// LOGOUT (MODIFIED)
+// ======================
+document.getElementById('logoutBtn').addEventListener('click', async ()=>{
+  try {
+    // Kirim request logout ke server
+    await fetch('/api/server', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        action: 'logout',
+        session_id: currentSessionId
+      })
+    });
+  } catch (err) {
+    // Ignore errors on logout
   } finally {
-    loginBtn.innerHTML = 'Login';
-    loginBtn.disabled = false;
+    // Clear semua data lokal
+    localStorage.removeItem('session_id');
+    localStorage.removeItem('username');
+    localStorage.removeItem('loginTime');
+    localStorage.removeItem('serverHistory');
+    
+    currentSessionId = '';
+    loginAttemptCount = 0;
+    
+    // Reset UI
+    hideActionButtons();
+    location.reload();
   }
 });
 
-// Logout (KODE ASLI)
-document.getElementById('logoutBtn').addEventListener('click',()=>{
-  localStorage.removeItem('username');
-  localStorage.removeItem('loginTime');
-  
-  // MODIFIKASI: Hentikan musik saat logout
-  if (backgroundMusic) {
-      backgroundMusic.pause();
-      backgroundMusic.currentTime = 0; // Kembalikan ke awal
-      backgroundMusic.muted = true; // Set ke muted
-  }
-  // END MODIFIKASI
-  
-  location.reload();
-});
-
-// NEW: Sambungkan tombol navigasi ikon baru ke fungsi lama
-listBtnNav.addEventListener('click', listBtn.click.bind(listBtn)); 
-historyBtnNav.addEventListener('click', historyBtn.click.bind(historyBtn)); 
-logoutBtnNav.addEventListener('click', logoutBtn.click.bind(logoutBtn)); 
-
-// Create server (KODE ASLI)
+// ======================
+// CREATE SERVER (MODIFIED - tambah session_id)
+// ======================
 document.getElementById('createBtn').addEventListener('click', async ()=>{
   const name = document.getElementById('serverName').value.trim();
   const ram = ramSelect.value;
-  if(!name) return alert("⚠️ Nama server harus diisi!");
   
-  const createBtn = document.getElementById('createBtn');
-  createBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Membuat...';
-  createBtn.disabled = true;
+  if(!name) {
+    showToast('Nama server harus diisi', 'warning');
+    return;
+  }
   
-  resultDiv.textContent="🚀 Membuat server...";
+  if(!currentSessionId){
+    showToast('Session expired. Silakan login kembali.', 'error');
+    location.reload();
+    return;
+  }
+  
+  resultDiv.textContent="Membuat server...";
+  
   try{
     const res = await fetch('/api/server',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({action:'create', name, ram})
+      body:JSON.stringify({
+        action:'create', 
+        name, 
+        ram,
+        session_id: currentSessionId  // ← TAMBAH INI
+      })
     });
+    
     const data = await res.json();
     if(data.success){
-      resultDiv.textContent=`✅ SERVER BERHASIL DIBUAT!\n\n` +
-                           `┌──────────────────────────┐\n` +
-                           `│ 📍 Login Panel: ${data.panel}\n` +
-                           `│ 👤 Username: ${data.username}\n` +
-                           `│ 📧 Email: ${data.email}\n` +
-                           `│ 🔑 Password: ${data.password}\n` +
-                           `│ 💾 RAM: ${data.ram*550} MB\n` +
-                           `└──────────────────────────┘\n\n` +
-                           `⚠️ Simpan informasi ini dengan aman!`;
+      const ramDisplay = data.ram === 'unlimited' ? 'Unlimited' : `${data.ram} GB`;
+      resultDiv.textContent=`✅ Server berhasil dibuat!\nLogin Panel: ${data.panel}\nUsername: ${data.username}\nEmail: ${data.email}\nPassword: ${data.password}\nRAM: ${ramDisplay}`;
+
+      showActionButtons({
+        username: data.username,
+        password: data.password,
+        panel: data.panel
+      });
 
       const history = JSON.parse(localStorage.getItem('serverHistory')||'[]');
       history.push({
-        date: new Date().toLocaleString('id-ID', { 
-          weekday: 'long', 
-          year: 'numeric', 
-          month: 'long', 
-          day: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit'
-        }),
+        date: new Date().toLocaleString(),
         username: data.username,
         password: data.password,
         panel: data.panel,
         serverId: data.serverId
       });
       localStorage.setItem('serverHistory', JSON.stringify(history));
+      
+      showToast('✨ Server berhasil dibuat!', 'success');
     } else {
       resultDiv.textContent="❌ Gagal: "+data.message;
+      hideActionButtons();
+      showToast('Gagal membuat server: ' + data.message, 'error');
+      
+      // Jika session expired, reload
+      if(data.message.includes('Session') || data.message.includes('expired')){
+        setTimeout(() => location.reload(), 2000);
+      }
     }
-  }catch(err){ 
+  }catch(err){
     resultDiv.textContent="⚠️ Error: "+err.message;
-  } finally {
-    createBtn.innerHTML = '🎯 Create Panel';
-    createBtn.disabled = false;
+    hideActionButtons();
+    showToast('Error koneksi server', 'error');
   }
 });
 
-// List servers (KODE ASLI)
+// ======================
+// LIST SERVERS (MODIFIED - tambah session_id)
+// ======================
 document.getElementById('listBtn').addEventListener('click', async ()=>{
-  const listBtnElement = listBtnNav.querySelector('.nav-icon');
+  if(!currentSessionId){
+    showToast('Session expired. Silakan login kembali.', 'error');
+    location.reload();
+    return;
+  }
   
-  const originalIcon = listBtnElement.innerHTML;
-  listBtnElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-  listBtnNav.style.pointerEvents = 'none'; // Disable klik
+  resultDiv.textContent="Mengambil jumlah server...";
   
-  resultDiv.textContent="📡 Mengambil data server...";
   try{
-    const res = await fetch('/api/server');
+    const res = await fetch('/api/server', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        action: 'list',
+        session_id: currentSessionId  // ← TAMBAH INI
+      })
+    });
+    
     const data = await res.json();
     if(data.success) {
-      resultDiv.textContent=`📊 STATISTIK SERVER\n\n` +
-                           `┌──────────────────────────┐\n` +
-                           `│ Jumlah server aktif: ${data.count}\n` +
-                           `│ Status: 🟢 ONLINE\n` +
-                           `│ Update: ${new Date().toLocaleTimeString()}\n` +
-                           `└──────────────────────────┘`;
+      resultDiv.textContent=`📊 Jumlah server di panel: ${data.count}`;
+      showToast(`📊 Ditemukan ${data.count} server aktif`, 'info');
     } else {
       resultDiv.textContent="❌ Gagal ambil data: "+data.message;
+      showToast('Gagal mengambil data server', 'error');
     }
-  }catch(err){ 
+  }catch(err){
     resultDiv.textContent="⚠️ Error: "+err.message;
-  } finally {
-    listBtnElement.innerHTML = originalIcon;
-    listBtnNav.style.pointerEvents = 'auto'; // Enable klik
+    showToast('Error koneksi server', 'error');
   }
 });
 
-// Lihat Riwayat (KODE ASLI)
+// ======================
+// HISTORY
+// ======================
 historyBtn.addEventListener('click', ()=>{
   panel.style.display='none';
   historySection.style.display='block';
+  hideActionButtons();
   renderHistory();
 });
 
-// Kembali ke panel utama (KODE ASLI)
 backBtn.addEventListener('click', ()=>{
   historySection.style.display='none';
   panel.style.display='block';
 });
 
-// Render riwayat (KODE ASLI)
 function renderHistory(){
   historyList.innerHTML='';
   const history = JSON.parse(localStorage.getItem('serverHistory')||'[]');
   if(history.length===0){
-    historyList.innerHTML='<div class="info" style="text-align:center;">📭 Tidak ada riwayat server.</div>';
+    historyList.innerHTML='<p>Tidak ada riwayat server.</p>';
     return;
   }
   
   history.forEach((entry,i)=>{
-    const historyCard = document.createElement('div');
-    historyCard.className='info';
-    historyCard.innerHTML=`
-      <div style="display: flex; align-items: center; margin-bottom: 10px;">
-        <div style="background: #238636; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 10px;">
-          ${i+1}
-        </div>
-        <strong style="flex-grow: 1;">${entry.username}</strong>
-        <span style="font-size: 12px; color: #8b949e;">${entry.date}</span>
-      </div>
-      <div style="margin-left: 40px;">
-        <div><strong>🔑 Password:</strong> ${entry.password}</div>
-        <div><strong>🌐 Panel:</strong> <a href="${entry.panel}" target="_blank" style="color:#58a6ff; text-decoration:none;">${entry.panel}</a></div>
-      </div>
+    const card = document.createElement('div');
+    card.className='card';
+    card.innerHTML=`
+      <strong>${escapeHTML(entry.username)}</strong><br>
+      Password: ${escapeHTML(entry.password)}<br>
+      Panel: <a href="${escapeHTML(entry.panel)}" target="_blank">${escapeHTML(entry.panel)}</a><br>
+      Tanggal: ${escapeHTML(entry.date)}
     `;
     
     const delBtn = document.createElement('button');
-    delBtn.innerHTML = '<i class="fas fa-trash-alt"></i> Hapus Server';
+    delBtn.textContent='Hapus Server';
     delBtn.className='deleteBtn';
     delBtn.addEventListener('click', async ()=>{
-      if(!confirm('⚠️ Yakin ingin menghapus server ini?')) return;
+      if(!currentSessionId){
+        showToast('Session expired. Silakan login kembali.', 'error');
+        location.reload();
+        return;
+      }
+      
+      const confirmed = await showConfirm(
+        'Hapus Server',
+        `Server ${escapeHTML(entry.username)} akan dihapus permanen. Tindakan ini tidak dapat dibatalkan.`,
+        'danger',
+        'Ya, Hapus'
+      );
+      
+      if(!confirmed) return;
+      
       try{
         const res = await fetch('/api/server',{
           method:'POST',
           headers:{'Content-Type':'application/json'},
-          body:JSON.stringify({action:'delete', serverId: entry.serverId})
+          body:JSON.stringify({
+            action:'delete', 
+            serverId: entry.serverId,
+            session_id: currentSessionId  // ← TAMBAH INI
+          })
         });
+        
         const data = await res.json();
         if(data.success){
-          alert('✅ Server berhasil dihapus!');
+          showToast(`Server ${entry.username} berhasil dihapus`, 'success');
           history.splice(i,1);
           localStorage.setItem('serverHistory', JSON.stringify(history));
           renderHistory();
-        } else alert('❌ Gagal hapus server: '+data.message);
-      }catch(err){ alert('⚠️ Error: '+err.message); }
+        } else {
+          showToast('Gagal menghapus server: ' + data.message, 'error');
+        }
+      }catch(err){
+        showToast('Error koneksi server', 'error');
+      }
     });
     
-    historyCard.appendChild(delBtn);
-    historyList.appendChild(historyCard);
+    card.appendChild(delBtn);
+    historyList.appendChild(card);
   });
 }
 
-// --- JAVASCRIPT BARU UNTUK SLIDER SWIPE ---
-
-const sliderWrapper = document.getElementById('headerSliderWrapper');
-const sliderItems = document.querySelectorAll('.slider-item');
-const sliderDots = document.getElementById('sliderDots').querySelectorAll('.dot');
-
-let currentSlide = 0;
-let isDragging = false;
-let startPos = 0;
-let currentTranslate = 0;
-let prevTranslate = 0;
-// Gunakan ClientWidth dari elemen pertama (slide 1) untuk lebar
-let slideWidth = sliderItems[0] ? sliderItems[0].clientWidth : 0; 
-
-
-function setPositionByIndex() {
-    // Pastikan slideWidth terdefinisi sebelum perhitungan
-    slideWidth = sliderItems[0] ? sliderItems[0].clientWidth : 0;
-    if (slideWidth === 0) return; // Stop jika lebar belum terdeteksi
-    
-    currentTranslate = currentSlide * -slideWidth;
-    setSliderPosition();
-    updateDots();
+// ======================
+// XSS PROTECTION FUNCTION
+// ======================
+function escapeHTML(text) {
+  if (typeof text !== 'string') return '';
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
 }
 
-function setSliderPosition() {
-    sliderWrapper.style.transform = `translateX(${currentTranslate}px)`;
+// ======================
+// AUTO-LOGOUT ON INACTIVITY (OPTIONAL)
+// ======================
+let inactivityTimer;
+function resetInactivityTimer() {
+  clearTimeout(inactivityTimer);
+  if(currentSessionId){
+    inactivityTimer = setTimeout(() => {
+      showToast('Session berakhir karena tidak aktif', 'warning');
+      document.getElementById('logoutBtn').click();
+    }, 20 * 60 * 1000); // 20 menit
+  }
 }
 
-function updateDots() {
-    sliderDots.forEach((dot, index) => {
-        dot.classList.remove('active');
-        if (index === currentSlide) {
-            dot.classList.add('active');
-        }
-    });
-}
-
-// Event Listeners untuk Touch
-if (sliderWrapper) {
-    sliderWrapper.addEventListener('touchstart', touchStart);
-    sliderWrapper.addEventListener('touchend', touchEnd);
-    sliderWrapper.addEventListener('touchmove', touchMove);
-}
-
-// Event Listeners untuk Dots
-sliderDots.forEach((dot, index) => {
-    dot.addEventListener('click', () => {
-        currentSlide = index;
-        setPositionByIndex();
-    });
+// Reset timer pada aktivitas user
+['click', 'mousemove', 'keypress', 'scroll'].forEach(event => {
+  document.addEventListener(event, resetInactivityTimer);
 });
 
-// Fungsi Touch Handlers
-function touchStart(event) {
-    if (event.touches.length !== 1) return; // Hanya berlaku untuk 1 jari
-    slideWidth = sliderItems[0].clientWidth; // Update lebar
-    startPos = event.touches[0].clientX;
-    isDragging = true;
-    // Hapus transisi agar gesekan terasa responsif
-    sliderWrapper.style.transition = 'none'; 
-}
+// Start timer
+resetInactivityTimer();
 
-function touchMove(event) {
-    if (!isDragging) return;
-    const currentPos = event.touches[0].clientX;
-    const deltaX = currentPos - startPos;
-    
-    // Geser wadah dengan mengikuti sentuhan
-    currentTranslate = prevTranslate + deltaX;
-    setSliderPosition();
-}
+// ======================
+// INPUT VALIDATION
+// ======================
+document.getElementById('serverName').addEventListener('input', function(e){
+  // Hanya izinkan alphanumeric, dash, dan underscore
+  this.value = this.value.replace(/[^a-zA-Z0-9-_]/g, '');
+});
 
-function touchEnd() {
-    if (!isDragging) return;
-    isDragging = false;
-    
-    const movedBy = currentTranslate - prevTranslate;
-    
-    // Aktifkan kembali transisi
-    sliderWrapper.style.transition = 'transform 0.3s ease-in-out'; 
+// ======================
+// PASSWORD VISIBILITY TOGGLE (OPTIONAL)
+// ======================
 
-    // Logika menentukan slide berikutnya (Toleransi geser > 50px)
-    if (movedBy < -50) { // Swipe ke kiri (pindah ke slide berikutnya)
-        currentSlide = Math.min(currentSlide + 1, sliderItems.length - 1);
-    } else if (movedBy > 50) { // Swipe ke kanan (pindah ke slide sebelumnya)
-        currentSlide = Math.max(currentSlide - 1, 0);
-    }
-    
-    // Terapkan posisi slide yang baru
-    setPositionByIndex();
-    prevTranslate = currentTranslate; // Reset posisi awal geser berikutnya
-}
 
-// Tambahkan inisialisasi pada load agar posisi slider benar
-window.addEventListener('load', setPositionByIndex);
-
-// End of original JavaScript code
 </script>
-
 </body>
 </html>
-
