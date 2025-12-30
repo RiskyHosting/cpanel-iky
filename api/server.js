@@ -1,4 +1,4 @@
-// api/server.js - FULL VERSION FIXED
+// api/server.js - FIXED VERSION (SIMPLE & WORKING)
 import { validateLogin } from './account';
 import { PANEL_URL, API_KEY, NODE_ID, NEST_ID, EGG_ID, DOCKER_IMG } from './panel';
 
@@ -28,18 +28,10 @@ function cleanupOldSessions() {
     }
 }
 
+// Cleanup every 5 minutes
 setInterval(cleanupOldSessions, 5 * 60 * 1000);
 
 export default async function handler(req, res) {
-  // Set CORS headers
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  
-  if (req.method === "OPTIONS") {
-    return res.status(200).end();
-  }
-
   if (req.method === "GET") {
     try {
       const serverRes = await fetch(`${PANEL_URL}/api/application/servers`, {
@@ -53,11 +45,7 @@ export default async function handler(req, res) {
       const serverData = await serverRes.json();
 
       if (!serverRes.ok) {
-        return res.json({ 
-          success: false, 
-          message: "Failed to fetch servers",
-          error: serverData 
-        });
+        return res.json({ success: false, message: JSON.stringify(serverData) });
       }
 
       return res.json({
@@ -66,11 +54,7 @@ export default async function handler(req, res) {
       });
 
     } catch (err) {
-      return res.json({ 
-        success: false, 
-        message: "Server connection error",
-        error: err.message 
-      });
+      return res.json({ success: false, message: err.message });
     }
   }
 
@@ -155,7 +139,7 @@ export default async function handler(req, res) {
         }
       }
 
-      // 👑 CREATE ADMIN ACCOUNT
+      // 👑 CREATE ADMIN ACCOUNT IN PTERODACTYL
       if (action === "create_admin_account") {
         if (!new_username || new_username.length < 3) {
           return res.json({ 
@@ -229,7 +213,7 @@ export default async function handler(req, res) {
         }
       }
 
-      // 📋 LIST ALL ACCOUNTS
+      // 📋 LIST ALL ACCOUNTS FROM PTERODACTYL
       if (action === "list_all_accounts") {
         try {
           const usersRes = await fetch(`${PANEL_URL}/api/application/users`, {
@@ -325,258 +309,263 @@ export default async function handler(req, res) {
         session.lastActivity = Date.now();
       }
 
-      // ==================== 🟩 CREATE SERVER - FIXED VERSION ====================
+      // ==================== 🟩 CREATE SERVER - FIXED ====================
       if (action === "create") {
-        console.log(`[CREATE SERVER] Starting process for: ${name} with RAM: ${ram}`);
-        
         const email = `user${Date.now()}@buyer.bimxyz.com`;
         const userPassword = Math.random().toString(36).slice(-8);
 
-        try {
-          // 1. BUAT USER DI PTERODACTYL
-          console.log(`[1/6] Creating user: ${name}`);
-          const userRes = await fetch(`${PANEL_URL}/api/application/users`, {
-            method: "POST",
-            headers: {
-              "Authorization": `Bearer ${API_KEY}`,
-              "Content-Type": "application/json",
-              "Accept": "application/json"
-            },
-            body: JSON.stringify({
-              email,
-              username: name.toLowerCase().replace(/[^a-z0-9_]/g, "_").substring(0, 20),
-              first_name: name.substring(0, 30),
-              last_name: "Client",
-              password: userPassword,
-              root_admin: false,
-              language: "en"
-            })
-          });
-
-          const userData = await userRes.json();
-          
-          if (!userRes.ok) {
-            console.error(`User creation failed:`, userData);
-            return res.json({ 
-              success: false, 
-              message: `Gagal buat user: ${userData.errors?.[0]?.detail || JSON.stringify(userData)}` 
-            });
-          }
-
-          const userId = userData.attributes.id;
-          console.log(`✅ User created: ${userData.attributes.username} (ID: ${userId})`);
-
-          // 2. CARI ALLOCATION KOSONG
-          console.log(`[2/6] Finding free allocation...`);
-          let freeAlloc = null;
-          let page = 1;
-          const MAX_PAGES = 3;
-
-          while (!freeAlloc && page <= MAX_PAGES) {
-            try {
-              const allocRes = await fetch(`${PANEL_URL}/api/application/nodes/${NODE_ID}/allocations?page=${page}&per_page=50`, {
-                headers: {
-                  "Authorization": `Bearer ${API_KEY}`,
-                  "Accept": "application/json"
-                }
-              });
-
-              if (!allocRes.ok) {
-                const allocError = await allocRes.json();
-                throw new Error(`Allocation error: ${JSON.stringify(allocError)}`);
-              }
-
-              const allocData = await allocRes.json();
-              
-              // Cari allocation yang belum dipakai
-              freeAlloc = allocData.data?.find(a => !a.attributes.assigned);
-              
-              if (!freeAlloc && page >= (allocData.meta?.pagination?.total_pages || 1)) {
-                break;
-              }
-              
-              page++;
-              
-            } catch (allocErr) {
-              console.error("Error mencari allocation:", allocErr);
-              break;
-            }
-          }
-
-          if (!freeAlloc) {
-            console.log(`❌ No free allocation found, deleting user...`);
-            // Hapus user
-            try {
-              await fetch(`${PANEL_URL}/api/application/users/${userId}`, {
-                method: "DELETE",
-                headers: { "Authorization": `Bearer ${API_KEY}` }
-              });
-            } catch (deleteErr) {}
-            
-            return res.json({ 
-              success: false, 
-              message: "❌ Tidak ada port (allocation) kosong di node ini!" 
-            });
-          }
-
-          console.log(`✅ Found free allocation: ${freeAlloc.attributes.ip}:${freeAlloc.attributes.port}`);
-
-          // 3. AMBIL EGG DETAIL (NODE.JS EGG 15)
-          console.log(`[3/6] Fetching egg details...`);
-          let eggVariables = {};
-          let startupCmd = "";
-          
-          try {
-            const eggRes = await fetch(`${PANEL_URL}/api/application/nests/${NEST_ID}/eggs/${EGG_ID}?include=variables`, {
-              headers: {
-                "Authorization": `Bearer ${API_KEY}`,
-                "Accept": "application/json"
-              }
-            });
-
-            if (eggRes.ok) {
-              const eggData = await eggRes.json();
-              startupCmd = eggData.attributes.startup || "npm start";
-              console.log(`Egg startup: ${startupCmd}`);
-              
-              // Environment variables khusus untuk Node.js
-              if (eggData.attributes.relationships?.variables?.data) {
-                eggData.attributes.relationships.variables.data.forEach(v => {
-                  eggVariables[v.attributes.env_variable] = v.attributes.default_value || "";
-                });
-              }
-            }
-          } catch (eggErr) {
-            console.warn(`Warning: Gagal ambil egg details, using defaults`);
-          }
-
-          // 4. SET DEFAULT ENV VARIABLES UNTUK NODE.JS
-          // Ini penting! Node.js egg butuh variabel ini
-          const defaultEnv = {
-            NODE_VERSION: "20",
-            NPM_VERSION: "latest",
-            STARTUP_CMD: "npm start",
-            USER_UPLOAD: "0",
-            AUTO_UPDATE: "0",
-            ...eggVariables
-          };
-
-          // 5. HITUNG LIMITS (FIX: Unlimited = 0)
-          console.log(`[4/6] Calculating limits for RAM: ${ram}`);
-          const ramNumber = ram === 'unlimited' ? 1 : parseInt(ram);
-          
-          const limits = {
-            memory: ram === 'unlimited' ? 0 : ramNumber * 1024, // MB (0 = unlimited)
-            swap: ram === 'unlimited' ? -1 : 0, // -1 = unlimited
-            disk: ram === 'unlimited' ? 0 : ramNumber * 2048, // MB (0 = unlimited)
-            io: 500,
-            cpu: ram === 'unlimited' ? 0 : Math.min(ramNumber * 100, 400), // % (0 = unlimited)
-            threads: null,
-            oom_disabled: false
-          };
-
-          console.log(`Limits:`, limits);
-
-          // 6. BUAT SERVER
-          console.log(`[5/6] Creating server...`);
-          const serverPayload = {
-            name: name.substring(0, 50),
-            description: `Dibuat via Risky Hosting Panel - ${new Date().toLocaleDateString()}`,
-            user: parseInt(userId),
-            egg: parseInt(EGG_ID),
-            docker_image: DOCKER_IMG,
-            startup: startupCmd,
-            environment: defaultEnv,
-            limits: limits,
-            feature_limits: {
-              databases: 1,
-              backups: 1,
-              allocations: 1
-            },
-            allocation: {
-              default: parseInt(freeAlloc.attributes.id),
-              additional: []
-            },
-            deploy: {
-              locations: [parseInt(NODE_ID)],
-              dedicated_ip: false,
-              port_range: []
-            },
-            start_on_completion: true,
-            skip_scripts: false
-          };
-
-          console.log(`Server payload prepared`);
-
-          const serverRes = await fetch(`${PANEL_URL}/api/application/servers`, {
-            method: "POST",
-            headers: {
-              "Authorization": `Bearer ${API_KEY}`,
-              "Content-Type": "application/json",
-              "Accept": "application/json"
-            },
-            body: JSON.stringify(serverPayload)
-          });
-
-          const serverData = await serverRes.json();
-          
-          // 7. HANDLE RESPONSE
-          if (!serverRes.ok) {
-            console.error(`❌ Server creation failed:`, serverData);
-            
-            // Hapus user jika server gagal
-            try {
-              await fetch(`${PANEL_URL}/api/application/users/${userId}`, {
-                method: "DELETE",
-                headers: { "Authorization": `Bearer ${API_KEY}` }
-              });
-            } catch (deleteErr) {}
-            
-            const errorDetail = serverData.errors?.[0]?.detail || JSON.stringify(serverData);
-            return res.json({ 
-              success: false, 
-              message: `❌ Gagal buat server: ${errorDetail}`,
-              error_details: serverData
-            });
-          }
-
-          console.log(`[6/6] ✅ Server created successfully! ID: ${serverData.attributes.id}`);
-
-          // 8. KIRIM RESPONSE
-          return res.json({
-            success: true,
-            message: "✅ Server berhasil dibuat!",
-            panel: `${PANEL_URL}/server/${serverData.attributes.identifier}`,
-            username: userData.attributes.username,
-            email: userData.attributes.email,
+        // 1. BUAT USER
+        const userRes = await fetch(`${PANEL_URL}/api/application/users`, {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${API_KEY}`,
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+          },
+          body: JSON.stringify({
+            email,
+            username: name.toLowerCase().replace(/\s+/g, "_"),
+            first_name: name,
+            last_name: "Client",
             password: userPassword,
-            ram: ram === 'unlimited' ? 'Unlimited' : `${ram} GB`,
-            serverId: serverData.attributes.id,
-            identifier: serverData.attributes.identifier,
-            allocation: {
-              ip: freeAlloc.attributes.ip,
-              port: freeAlloc.attributes.port
-            },
-            limits: {
-              memory: limits.memory === 0 ? 'Unlimited' : `${limits.memory} MB`,
-              disk: limits.disk === 0 ? 'Unlimited' : `${limits.disk} MB`,
-              cpu: limits.cpu === 0 ? 'Unlimited' : `${limits.cpu}%`
-            },
-            note: "Server sedang diproses. Tunggu 1-2 menit untuk instalasi."
+            root_admin: false
+          })
+        });
+
+        const userData = await userRes.json();
+        if (!userRes.ok) {
+          return res.json({ 
+            success: false, 
+            message: `Gagal buat user: ${JSON.stringify(userData)}` 
+          });
+        }
+
+        const userId = userData.attributes.id;
+
+        // 2. CARI ALLOCATION KOSONG
+        let freeAlloc = null;
+        let page = 1;
+
+        while (!freeAlloc) {
+          const allocRes = await fetch(`${PANEL_URL}/api/application/nodes/${NODE_ID}/allocations?page=${page}`, {
+            headers: {
+              "Authorization": `Bearer ${API_KEY}`,
+              "Accept": "application/json"
+            }
           });
 
-        } catch (processErr) {
-          console.error(`❌ Error in server creation:`, processErr);
-          return res.json({
-            success: false,
-            message: `❌ Error sistem: ${processErr.message}`
+          const allocData = await allocRes.json();
+          if (!allocRes.ok) {
+            return res.json({ 
+              success: false, 
+              message: `Gagal ambil allocation: ${JSON.stringify(allocData)}` 
+            });
+          }
+
+          freeAlloc = allocData.data.find(a => a.attributes.assigned === false);
+          if (freeAlloc) break;
+
+          if (page >= allocData.meta.pagination.total_pages) break;
+          page++;
+        }
+
+        if (!freeAlloc) {
+          return res.json({ 
+            success: false, 
+            message: "❌ Ga ada allocation kosong!" 
           });
+        }
+
+        // 3. CEK EGG YANG VALID (FIX UNTUK ERROR "egg is invalid")
+        // Coba ambil semua eggs dari nest dulu
+        let validEggId = EGG_ID;
+        try {
+          const eggsRes = await fetch(`${PANEL_URL}/api/application/nests/${NEST_ID}/eggs`, {
+            headers: {
+              "Authorization": `Bearer ${API_KEY}`,
+              "Accept": "application/json"
+            }
+          });
+          
+          if (eggsRes.ok) {
+            const eggsData = await eggsRes.json();
+            // Cari egg yang ada
+            const availableEgg = eggsData.data.find(e => e.attributes.id == EGG_ID);
+            if (!availableEgg && eggsData.data.length > 0) {
+              // Jika egg tidak ditemukan, pakai egg pertama yang ada
+              validEggId = eggsData.data[0].attributes.id;
+              console.log(`⚠️ Egg ID ${EGG_ID} tidak ditemukan, pakai egg ID: ${validEggId}`);
+            }
+          }
+        } catch (eggError) {
+          console.log("Gagal cek eggs, pakai default:", eggError.message);
+        }
+
+        // 4. AMBIL EGG VARIABLES
+        const eggRes = await fetch(`${PANEL_URL}/api/application/nests/${NEST_ID}/eggs/${validEggId}?include=variables`, {
+          headers: {
+            "Authorization": `Bearer ${API_KEY}`,
+            "Accept": "application/json"
+          }
+        });
+
+        if (!eggRes.ok) {
+          return res.json({ 
+            success: false, 
+            message: `Gagal ambil egg details: ${await eggRes.text()}` 
+          });
+        }
+
+        const eggData = await eggRes.json();
+
+        const env = {};
+        if (eggData.attributes.relationships?.variables?.data) {
+          eggData.attributes.relationships.variables.data.forEach(v => {
+            env[v.attributes.env_variable] = v.attributes.default_value || "";
+          });
+        }
+
+        // 5. HITUNG LIMITS YANG BENAR
+        const limits = (() => {
+          if (ram === 'unlimited') {
+            return { 
+              memory: 0,      // Unlimited
+              swap: -1,       // Unlimited swap
+              disk: 0,        // Unlimited
+              io: 500, 
+              cpu: 0          // Unlimited
+            };
+          }
+          
+          const ramNumber = parseInt(ram);
+          if (isNaN(ramNumber) || ramNumber < 1) {
+            return {
+              memory: 1024,   // Default 1GB
+              swap: 0,
+              disk: 2048,     // Default 2GB
+              io: 500,
+              cpu: 100        // Default 100%
+            };
+          }
+          
+          // Konversi yang benar untuk Pterodactyl
+          return {
+            memory: ramNumber * 1024,  // GB to MB
+            swap: 0,
+            disk: ramNumber * 2048,    // Disk 2x RAM
+            io: 500,
+            cpu: ramNumber * 100       // 100% per GB
+          };
+        })();
+
+        // 6. BUAT SERVER
+        const serverRes = await fetch(`${PANEL_URL}/api/application/servers`, {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${API_KEY}`,
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+          },
+          body: JSON.stringify({
+            name: name.substring(0, 50),
+            user: userId,
+            egg: validEggId,  // Pakai egg yang valid
+            docker_image: DOCKER_IMG,
+            startup: eggData.attributes.startup || "",
+            limits: limits,
+            environment: env,
+            feature_limits: { 
+              databases: 1, 
+              backups: 1, 
+              allocations: 1 
+            },
+            allocation: { 
+              default: freeAlloc.attributes.id 
+            }
+          })
+        });
+
+        const serverData = await serverRes.json();
+        
+        if (!serverRes.ok) {
+          // Coba hapus user jika server gagal
+          try {
+            await fetch(`${PANEL_URL}/api/application/users/${userId}`, {
+              method: "DELETE",
+              headers: { "Authorization": `Bearer ${API_KEY}` }
+            });
+          } catch (e) {}
+          
+          return res.json({ 
+            success: false, 
+            message: `❌ Gagal buat server: ${JSON.stringify(serverData.errors || serverData)}`,
+            error_type: 'server_creation_failed'
+          });
+        }
+
+        // 7. BERHASIL
+        return res.json({
+          success: true,
+          message: "✅ Server berhasil dibuat!",
+          panel: `${PANEL_URL}/server/${serverData.attributes.identifier}`,
+          username: userData.attributes.username,
+          email: userData.attributes.email,
+          password: userPassword,
+          ram: ram === 'unlimited' ? 'Unlimited' : `${ram} GB`,
+          serverId: serverData.attributes.id,
+          identifier: serverData.attributes.identifier,
+          allocation: `${freeAlloc.attributes.ip}:${freeAlloc.attributes.port}`
+        });
+      }
+
+      // 📋 LIST SERVERS
+      if (action === "list") {
+        const serverRes = await fetch(`${PANEL_URL}/api/application/servers`, {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${API_KEY}`,
+            "Accept": "application/json"
+          }
+        });
+
+        const serverData = await serverRes.json();
+
+        if (!serverRes.ok) {
+          return res.json({ success: false, message: JSON.stringify(serverData) });
+        }
+
+        return res.json({
+          success: true,
+          count: serverData.meta.pagination.total
+        });
+      }
+
+      // ❌ DELETE SERVER
+      if (action === "delete") {
+        if (!serverId) {
+          return res.json({ success: false, message: "Server ID harus ada!" });
+        }
+
+        const delRes = await fetch(`${PANEL_URL}/api/application/servers/${serverId}`, {
+          method: "DELETE",
+          headers: {
+            "Authorization": `Bearer ${API_KEY}`,
+            "Accept": "application/json"
+          }
+        });
+
+        if (delRes.status === 204) {
+          return res.json({ success: true, message: "Server berhasil dihapus" });
+        } else {
+          const errData = await delRes.json();
+          return res.json({ success: false, message: JSON.stringify(errData) });
         }
       }
 
-      // ==================== 📋 LIST SERVERS ====================
-      if (action === "list") {
+      // 📊 SYSTEM STATS
+      if (action === "system_stats") {
         try {
+          // Get servers count
           const serverRes = await fetch(`${PANEL_URL}/api/application/servers`, {
             method: "GET",
             headers: {
@@ -586,98 +575,25 @@ export default async function handler(req, res) {
           });
 
           const serverData = await serverRes.json();
-
-          if (!serverRes.ok) {
-            return res.json({ 
-              success: false, 
-              message: "Gagal ambil data server",
-              detail: serverData.errors?.[0]?.detail 
-            });
-          }
-
-          return res.json({
-            success: true,
-            count: serverData.meta?.pagination?.total || 0,
-            servers: serverData.data?.map(s => ({
-              id: s.attributes.id,
-              name: s.attributes.name,
-              identifier: s.attributes.identifier,
-              status: s.attributes.status || 'unknown'
-            })) || []
-          });
           
-        } catch (err) {
-          return res.json({ 
-            success: false, 
-            message: "Error koneksi ke panel",
-            detail: err.message 
-          });
-        }
-      }
-
-      // ==================== ❌ DELETE SERVER ====================
-      if (action === "delete") {
-        if (!serverId) {
-          return res.json({ success: false, message: "Server ID harus ada!" });
-        }
-
-        try {
-          const delRes = await fetch(`${PANEL_URL}/api/application/servers/${serverId}`, {
-            method: "DELETE",
+          // Get users count
+          const usersRes = await fetch(`${PANEL_URL}/api/application/users`, {
+            method: "GET",
             headers: {
               "Authorization": `Bearer ${API_KEY}`,
               "Accept": "application/json"
             }
           });
 
-          if (delRes.status === 204) {
-            return res.json({ 
-              success: true, 
-              message: "Server berhasil dihapus" 
-            });
-          } else {
-            const errData = await delRes.json();
-            return res.json({ 
-              success: false, 
-              message: `Gagal hapus: ${JSON.stringify(errData)}` 
-            });
-          }
-          
-        } catch (err) {
-          return res.json({ 
-            success: false, 
-            message: "Error koneksi",
-            detail: err.message 
-          });
-        }
-      }
-
-      // ==================== 📊 SYSTEM STATS ====================
-      if (action === "system_stats") {
-        try {
-          const [serverRes, usersRes] = await Promise.all([
-            fetch(`${PANEL_URL}/api/application/servers`, {
-              headers: { "Authorization": `Bearer ${API_KEY}`, "Accept": "application/json" }
-            }),
-            fetch(`${PANEL_URL}/api/application/users`, {
-              headers: { "Authorization": `Bearer ${API_KEY}`, "Accept": "application/json" }
-            })
-          ]);
-
-          const [serverData, usersData] = await Promise.all([
-            serverRes.ok ? serverRes.json() : { meta: { pagination: { total: 0 } } },
-            usersRes.ok ? usersRes.json() : { meta: { pagination: { total: 0 } }, data: [] }
-          ]);
-
-          const adminUsers = (usersData.data || []).filter(u => u.attributes.root_admin).length;
+          const usersData = await usersRes.json();
 
           return res.json({
             success: true,
             stats: {
               total_servers: serverData.meta?.pagination?.total || 0,
               total_users: usersData.meta?.pagination?.total || 0,
-              admin_users: adminUsers,
-              panel_status: "online",
+              admin_users: usersData.data?.filter(u => u.attributes.root_admin)?.length || 0,
+              panel_status: serverRes.ok ? "online" : "offline",
               last_update: new Date().toISOString(),
               panel_url: PANEL_URL
             }
@@ -691,15 +607,11 @@ export default async function handler(req, res) {
         }
       }
 
-      // ==================== UNKNOWN ACTION ====================
-      return res.status(400).json({ 
-        success: false, 
-        message: "Action tidak dikenal" 
-      });
+      return res.json({ success: false, message: "Action tidak dikenal" });
 
     } catch (err) {
       console.error("Global error:", err);
-      return res.status(500).json({ 
+      return res.json({ 
         success: false, 
         message: "Internal server error",
         detail: err.message 
@@ -707,9 +619,8 @@ export default async function handler(req, res) {
     }
   }
 
-  // ==================== METHOD NOT ALLOWED ====================
   return res.status(405).json({ 
     success: false, 
     message: "Method not allowed" 
   });
-}
+        }
