@@ -1,5 +1,5 @@
-export const PANEL_URL = "https://rasyaaganteng.rasyaaxinsa.web.id";
-export const API_KEY = "ptla_hUoCXCmIbQZ6arjIowE6UtaJGCN6pABGRWc6afE1mH4";
+export const PANEL_URL = "https://palkonanj.rasyaaxinsa.web.id";
+export const API_KEY = "ptla_6KSnODKTBT7qrHDfAnCja6ylH6Yvy9BWF5aeYOOT2Jz";
 export const NODE_ID = "1";
 export const NEST_ID = "5";
 export const EGG_ID = "15";
