@@ -1,5 +1,5 @@
-export const PANEL_URL = "https://my.pterodactyl.bimxyz.my.id";
-export const API_KEY = "ptla_2q4vtpUMpUjhIucPpxzbs8jec3U984ddvqi5FiiEBku";
+export const PANEL_URL = "https://apaya.welperoffcial.my.id";
+export const API_KEY = "ptla_TPPycWa79q3Yz6D7ZXrUdg6XVZMiqYj3CuozC8RNm9k";
 export const NODE_ID = "1";
 export const NEST_ID = "5";
 export const EGG_ID = "15";
