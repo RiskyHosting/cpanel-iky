@@ -1,5 +1,5 @@
-export const PANEL_URL = "https://vann-vip.orang-gantengg.biz.id";
-export const API_KEY = "ptla_n2LhIVZgBTMuRwJSZMcIbJkDgRikZsWHqwFls0tPAPg";
+export const PANEL_URL = "https://rasyapublic.rasyaahosting.biz.id";
+export const API_KEY = "ptla_PupLk7BjTOGKcKp2gcSxP2HS6B1pO64TulwXjtgKiN6";
 export const NODE_ID = "1";
 export const NEST_ID = "5";
 export const EGG_ID = "15";
