@@ -1,5 +1,5 @@
-export const PANEL_URL = "https://gatzzpublikv4.servercloud.my.id";
-export const API_KEY = "ptla_WDeN7zYaUnmAWYHz8cIxjTtk8vSNkKeVszK2CutDGdY";
+export const PANEL_URL = "https://gatzzurboyss.cloudprivate.web.id";
+export const API_KEY = "ptla_ODFqwFT3o268SJxFe1VunhpvtqAPf5LIB56TxIeiGk4";
 export const NODE_ID = "1";
 export const NEST_ID = "5";
 export const EGG_ID = "15";
