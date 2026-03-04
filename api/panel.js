@@ -1,5 +1,5 @@
-export const PANEL_URL = "https://sukee.berak.web.id";
-export const API_KEY = "ptla_zpmIopLNXwsjAUhvX3KVLi2O7w2yhEtWB0Ts9N8RsIa";
+export const PANEL_URL = "https://andixxx.agilsubdo.dpdns.org";
+export const API_KEY = "ptla_NekDfpQq71yDwqVXulLy9pJjmuBsxcDAuWuQYnYOPhe";
 export const NODE_ID = "1";
 export const NEST_ID = "5";
 export const EGG_ID = "15";
