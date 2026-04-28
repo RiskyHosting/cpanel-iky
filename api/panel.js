@@ -1,5 +1,5 @@
-export const PANEL_URL = "https://panell.ibzzz.my.id";
-export const API_KEY = "ptla_2wy3yZu47ULSYWUvlgeGp4IVNcb0zUdQBb72TXC4YP9";
+export const PANEL_URL = "https://alfamarketoffials.alfa-lyneen.my.id";
+export const API_KEY = "ptla_wIKF8JWImdTjGEIU2BxK4nYtdrXrh48QdOXm4hnNpPK";
 export const NODE_ID = "1";
 export const NEST_ID = "5";
 export const EGG_ID = "15";
