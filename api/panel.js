@@ -1,5 +1,5 @@
-export const PANEL_URL = "https://rokistore.serverpublic.web.id";
-export const API_KEY = "ptla_LtSMrAwkXuhFEoSMPCd7ufQQiGOQO2RxVW9nBBQJpc9";
+export const PANEL_URL = "https://michie.jkt48-private.com";
+export const API_KEY = "ptla_9a4x92CGpHSdh4qMIsgWJXFC9EoLhPrb64Slsd7XKdl";
 export const NODE_ID = "1";
 export const NEST_ID = "5";
 export const EGG_ID = "15";
