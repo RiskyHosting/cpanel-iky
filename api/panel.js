@@ -1,5 +1,5 @@
-export const PANEL_URL = "https://michie.jkt48-private.com";
-export const API_KEY = "ptla_9a4x92CGpHSdh4qMIsgWJXFC9EoLhPrb64Slsd7XKdl";
+export const PANEL_URL = "https://papi.queen-official.com";
+export const API_KEY = "ptla_nvgn9Zmvx3hrBwVbqFsNJylOVe1qg8kIb2wqYDHB9nd";
 export const NODE_ID = "1";
 export const NEST_ID = "5";
 export const EGG_ID = "15";
