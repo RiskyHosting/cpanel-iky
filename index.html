@@ -1,1625 +1,778 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>WEB CPANEL - RISKY HOSTING</title>
-
-<!-- ============ SECURITY HEADERS (FIXED) ============ -->
-<meta http-equiv="Content-Security-Policy" 
-      content="
-        default-src 'self';
-        script-src 'self' https://cdnjs.cloudflare.com 'unsafe-inline';
-        style-src  'self' https://cdnjs.cloudflare.com https://fonts.googleapis.com 'unsafe-inline';
-        font-src   'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:;
-        img-src    'self' data: https:;
-        connect-src 'self';
-        frame-ancestors 'none';
-        form-action 'self';
-      ">
-
-<meta http-equiv="X-Content-Type-Options" content="nosniff">
-<meta http-equiv="X-Frame-Options" content="DENY">
-<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
-<meta name="robots" content="noindex, nofollow">
-
-<!-- FONT AWESOME (ICON FIX) -->
-<link rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer">
-
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Poppins&display=swap');
-
-body {
-  margin: 0;
-  font-family: 'Poppins', sans-serif;
-  background: #0d1117;
-  color: #e6e6e6;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  min-height: 100vh;
-  overflow-y: hidden;
-}
-
-h1, h2 {
-  font-family: 'Orbitron', sans-serif;
-  color: #fff;
-  margin-bottom: 15px;
-}
-
-.card {
-  background: #161b22;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-  width: 460px;
-  margin: 0;
-  overflow-y: auto;
-  max-height: 90vh;
-  box-sizing: border-box;
-}
-
-input, select, button {
-  margin: 10px 0;
-  padding: 10px;
-  width: 100%;
-  max-width: 100%;
-  box-sizing: border-box;
-  border-radius: 8px;
-  border: 1px solid #30363d;
-  outline: none;
-  font-size: 14px;
-  background: #0d1117;
-  color: #e6e6e6;
-  transition: all 0.2s ease;
-}
-
-input:focus, select:focus {
-  border-color: #58a6ff;
-  box-shadow: 0 0 0 2px rgba(88,166,255,0.3);
-}
-
-button {
-  cursor: pointer;
-  background: #238636;
-  color: #fff;
-  font-weight: bold;
-  border: none;
-  transition: 0.3s;
-}
-button:hover { background: #2ea043; }
-#logoutBtn { background: #da3633; }
-#logoutBtn:hover { background: #f85149; }
-.deleteBtn { background: #da3633; margin-top:5px; }
-.deleteBtn:hover { background: #f85149; }
-
-.info {
-  font-size: 12px;
-  line-height: 1.4;
-  margin-bottom: 15px;
-  background: #0d1117;
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #30363d;
-}
-
-.server-status {
-  text-align: center;
-  margin-bottom: 10px;
-  font-size: 13px;
-}
-.server-status span {
-  padding: 4px 10px;
-  border-radius: 5px;
-  font-weight: bold;
-}
-.online { background-color: #2ea043; color: #fff; }
-.maintenance { background-color: #da3633; color: #fff; }
-
-#result {
-  font-family: 'Poppins', sans-serif;
-  white-space: pre-wrap;
-  margin-top: 10px;
-  background: #0d1117;
-  padding: 10px;
-  border-radius: 8px;
-  max-height: 200px;
-  overflow-y: auto;
-  border: 1px solid #30363d;
-  font-size: 13px;
-}
-
-.contact {
-  margin-top: 20px;
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  font-size: 22px;
-}
-.contact a {
-  color: #58a6ff;
-  transition: 0.3s;
-}
-.contact a:hover {
-  color: #1f6feb;
-  transform: scale(1.1);
-}
-
-#historySection { display: none; }
-#historyList {
-  max-height: 400px;
-  overflow-y: auto;
-  margin-top: 10px;
-}
-#historyList .card { margin-bottom: 10px; }
-
-/* TAMBAHAN UNTUK 3 BUTTON VERTIKAL */
-.button-group {
-  display: flex;
-  flex-direction: row;
-  gap: 10px;
-  margin-top: 15px;
-  justify-content: center;
-}
-
-.action-btn {
-  flex: 1;
-  padding: 12px 5px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: bold;
-  transition: 0.3s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-}
-
-.action-btn i {
-  font-size: 14px;
-}
-
-.copy-user {
-  background: #1f6feb;
-  color: white;
-}
-
-.copy-user:hover {
-  background: #2c81ff;
-}
-
-.open-panel {
-  background: #238636;
-  color: white;
-}
-
-.open-panel:hover {
-  background: #2ea043;
-}
-
-.copy-pass {
-  background: #da3633;
-  color: white;
-}
-
-.copy-pass:hover {
-  background: #f85149;
-}
-
-.action-btn:active {
-  transform: scale(0.98);
-}
-
-/* ====================== */
-/* CUSTOM MODAL & TOAST */
-/* ====================== */
-
-.custom-modal {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(8px);
-  z-index: 1000;
-  align-items: center;
-  justify-content: center;
-  animation: fadeIn 0.3s ease;
-}
-
-.modal-content {
-  background: linear-gradient(135deg, #161b22 0%, #0d1117 100%);
-  width: 90%;
-  max-width: 400px;
-  border-radius: 16px;
-  padding: 25px;
-  border: 1px solid rgba(88, 166, 255, 0.2);
-  box-shadow: 
-    0 20px 60px rgba(0, 0, 0, 0.5),
-    0 0 0 1px rgba(88, 166, 255, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  transform: translateY(0);
-  animation: modalSlideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-.modal-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 20px;
-}
-
-.modal-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-}
-
-.modal-icon.warning {
-  background: linear-gradient(135deg, #da3633, #f85149);
-  color: white;
-}
-
-.modal-icon.success {
-  background: linear-gradient(135deg, #238636, #2ea043);
-  color: white;
-}
-
-.modal-icon.info {
-  background: linear-gradient(135deg, #1f6feb, #2c81ff);
-  color: white;
-}
-
-.modal-title {
-  font-family: 'Orbitron', sans-serif;
-  font-size: 18px;
-  color: white;
-  margin: 0;
-}
-
-.modal-message {
-  color: #c9d1d9;
-  line-height: 1.6;
-  margin-bottom: 25px;
-  font-size: 14px;
-}
-
-.modal-buttons {
-  display: flex;
-  gap: 12px;
-}
-
-.modal-btn {
-  flex: 1;
-  padding: 12px 20px;
-  border-radius: 10px;
-  border: none;
-  font-weight: bold;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-.modal-btn-cancel {
-  background: rgba(88, 166, 255, 0.15);
-  color: #58a6ff;
-  border: 1px solid rgba(88, 166, 255, 0.3);
-}
-
-.modal-btn-cancel:hover {
-  background: rgba(88, 166, 255, 0.25);
-  transform: translateY(-2px);
-}
-
-.modal-btn-confirm {
-  background: linear-gradient(90deg, #238636, #2ea043);
-  color: white;
-}
-
-.modal-btn-confirm:hover {
-  background: linear-gradient(90deg, #2ea043, #3fb950);
-  transform: translateY(-2px);
-  box-shadow: 0 5px 20px rgba(46, 160, 67, 0.3);
-}
-
-.modal-btn-delete {
-  background: linear-gradient(90deg, #da3633, #f85149);
-  color: white;
-}
-
-.modal-btn-delete:hover {
-  background: linear-gradient(90deg, #f85149, #ff6b6b);
-  transform: translateY(-2px);
-  box-shadow: 0 5px 20px rgba(218, 54, 51, 0.3);
-}
-
-/* TOAST NOTIFICATION */
-.custom-toast {
-  position: fixed;
-  bottom: 30px;
-  right: 30px;
-  background: linear-gradient(135deg, #161b22, #0d1117);
-  padding: 15px 20px;
-  border-radius: 12px;
-  border-left: 4px solid #2ea043;
-  box-shadow: 
-    0 10px 30px rgba(0, 0, 0, 0.4),
-    0 0 0 1px rgba(46, 160, 67, 0.2);
-  max-width: 350px;
-  transform: translateX(100%);
-  opacity: 0;
-  transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-  z-index: 999;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.custom-toast.show {
-  transform: translateX(0);
-  opacity: 1;
-}
-
-.toast-icon {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  flex-shrink: 0;
-}
-
-.toast-icon.success {
-  background: linear-gradient(135deg, #238636, #2ea043);
-  color: white;
-}
-
-.toast-icon.error {
-  background: linear-gradient(135deg, #da3633, #f85149);
-  color: white;
-}
-
-.toast-icon.info {
-  background: linear-gradient(135deg, #1f6feb, #2c81ff);
-  color: white;
-}
-
-.toast-message {
-  color: #c9d1d9;
-  font-size: 13px;
-  line-height: 1.5;
-}
-
-/* ANIMATIONS */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes modalSlideUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes fadeOut {
-  from { opacity: 1; }
-  to { opacity: 0; }
-}
-
-/* SECURITY STYLES */
-.password-masked {
-  font-family: 'Courier New', monospace;
-  letter-spacing: 2px;
-  background: #1c1c1c;
-  padding: 5px 10px;
-  border-radius: 4px;
-  cursor: pointer;
-  user-select: none;
-}
-
-.password-masked:hover {
-  background: #2a2a2a;
-}
-
-.security-warning {
-  border: 1px solid #f0a73a;
-  background: rgba(240, 167, 58, 0.1);
-  padding: 8px;
-  border-radius: 6px;
-  margin: 10px 0;
-  font-size: 12px;
-}
-
-/* ADMIN STYLES */
-.btn-admin {
-  background: linear-gradient(90deg, #f0a73a, #ff9800) !important;
-}
-
-.btn-admin:hover {
-  background: linear-gradient(90deg, #ff9800, #ffb347) !important;
-}
-
-.admin-badge {
-  background: #f0a73a;
-  color: black;
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-size: 10px;
-  margin-left: 5px;
-}
-
-/* Account list styles */
-.account-item {
-  background: #0d1117;
-  border: 1px solid #30363d;
-  border-radius: 8px;
-  padding: 12px;
-  margin: 8px 0;
-  font-size: 13px;
-}
-
-.account-admin {
-  border-left: 4px solid #f0a73a;
-}
-
-.account-user {
-  border-left: 4px solid #58a6ff;
-}
-
-.account-reseller {
-  border-left: 4px solid #9c27b0;
-}
-
-@media(max-width: 500px){
-  .card {
-    width: 95%;
-    padding: 20px;
-  }
-  .button-group {
-    flex-direction: column;
-  }
-  .modal-content {
-    width: 95%;
-    padding: 20px;
-  }
-  .modal-buttons {
-    flex-direction: column;
-  }
-  .custom-toast {
-    left: 20px;
-    right: 20px;
-    max-width: none;
-  }
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>LIQUID GLASS · RISKY HOSTING</title>
+  <!-- SECURITY HEADERS -->
+  <meta http-equiv="Content-Security-Policy" 
+        content="
+          default-src 'self';
+          script-src 'self' https://cdnjs.cloudflare.com 'unsafe-inline';
+          style-src  'self' https://cdnjs.cloudflare.com https://fonts.googleapis.com 'unsafe-inline';
+          font-src   'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:;
+          img-src    'self' data: https:;
+          connect-src 'self';
+          frame-ancestors 'none';
+          form-action 'self';
+        ">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="X-Frame-Options" content="DENY">
+  <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+  <meta name="robots" content="noindex, nofollow">
+
+  <!-- FONT AWESOME & GOOGLE FONTS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ========== LIQUID GLASS MORPHISM - FRESH PALETTE ========== */
+    :root {
+      --bg-gradient-start: #0f0c29;
+      --bg-gradient-mid: #302b63;
+      --bg-gradient-end: #24243e;
+      --glass-primary: rgba(255, 255, 255, 0.06);
+      --glass-secondary: rgba(255, 255, 255, 0.12);
+      --glass-border: rgba(255, 255, 255, 0.2);
+      --glass-blur: 24px;
+      --mint: #5eead4;
+      --sky: #7dd3fc;
+      --violet: #a78bfa;
+      --rose: #f0abfc;
+      --amber: #fcd34d;
+      --coral: #fca5a5;
+      --text-main: #f8fafc;
+      --text-dim: #cbd5e1;
+      --radius-card: 32px;
+      --radius-btn: 60px;
+      --shadow-liquid: 0 25px 60px -12px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.2);
+      --transition-smooth: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-mid) 50%, var(--bg-gradient-end) 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.2rem;
+      color: var(--text-main);
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* animated liquid blobs background */
+    .blob {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(100px);
+      z-index: 0;
+      pointer-events: none;
+      animation: floatBlob 12s infinite alternate ease-in-out;
+    }
+    .blob-1 { width: 450px; height: 450px; background: rgba(94, 234, 212, 0.3); top: -80px; left: -80px; animation-duration: 14s; }
+    .blob-2 { width: 380px; height: 380px; background: rgba(167, 139, 250, 0.35); bottom: -60px; right: -60px; animation-duration: 10s; animation-delay: 2s; }
+    .blob-3 { width: 300px; height: 300px; background: rgba(125, 211, 252, 0.25); top: 40%; left: 60%; animation-duration: 16s; animation-delay: 4s; }
+
+    @keyframes floatBlob {
+      0% { transform: translate(0,0) scale(1); }
+      50% { transform: translate(40px, -30px) scale(1.15); }
+      100% { transform: translate(-20px, 40px) scale(0.9); }
+    }
+
+    .app-shell {
+      width: 100%;
+      max-width: 620px;
+      position: relative;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* ========== LIQUID GLASS CARD ========== */
+    .liquid-card {
+      background: var(--glass-primary);
+      backdrop-filter: blur(var(--glass-blur));
+      -webkit-backdrop-filter: blur(var(--glass-blur));
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-liquid);
+      padding: 2rem 2rem 1.8rem;
+      position: relative;
+      overflow: hidden;
+      transition: var(--transition-smooth);
+    }
+
+    .liquid-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -30%;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+      transition: var(--transition-smooth);
+    }
+
+    .liquid-card:hover::before {
+      transform: scale(1.2);
+      opacity: 0.7;
+    }
+
+    /* ========== TYPOGRAPHY ========== */
+    h1, h2, h3 {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+    h1 {
+      font-size: 2.4rem;
+      background: linear-gradient(135deg, #fff 0%, var(--mint) 50%, var(--sky) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.6rem;
+    }
+    h2 { font-size: 1.8rem; color: #f1f5f9; margin-bottom: 1.5rem; }
+    h3 { font-size: 1.4rem; color: #e2e8f0; margin: 1.2rem 0 0.8rem; }
+
+    /* ========== STATUS PILL ========== */
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1.2rem;
+      border-radius: 60px;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.25);
+      font-size: 0.85rem;
+      font-weight: 600;
+      backdrop-filter: blur(8px);
+      margin-bottom: 1.5rem;
+      transition: var(--transition-smooth);
+    }
+    .status-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--mint);
+      box-shadow: 0 0 10px var(--mint);
+    }
+    .status-off .status-dot { background: var(--coral); box-shadow: 0 0 10px var(--coral); }
+
+    /* ========== INPUTS & SELECTS ========== */
+    .input-group {
+      position: relative;
+      margin-bottom: 1.2rem;
+    }
+    .input-group .input-icon {
+      position: absolute;
+      left: 1.2rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: rgba(255,255,255,0.5);
+      font-size: 1rem;
+      pointer-events: none;
+      z-index: 1;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 1rem 1.2rem 1rem 3rem;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: var(--radius-btn);
+      color: #f9fafb;
+      font-size: 0.95rem;
+      outline: none;
+      transition: var(--transition-smooth);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      backdrop-filter: blur(4px);
+    }
+    input::placeholder { color: rgba(255,255,255,0.4); }
+    input:focus, select:focus {
+      border-color: var(--mint);
+      background: rgba(255,255,255,0.12);
+      box-shadow: 0 0 0 4px rgba(94, 234, 212, 0.2), inset 0 1px 0 rgba(255,255,255,0.2);
+      transform: translateY(-1px);
+    }
+    select option { background: #1e293b; color: #f8fafc; }
+
+    /* special: text inputs without icon? we'll add icons via html */
+    .no-icon { padding-left: 1.5rem !important; }
+
+    /* ========== BUTTONS ========== */
+    button {
+      cursor: pointer;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      border: none;
+      position: relative;
+      overflow: hidden;
+    }
+    button::after {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 0; height: 0;
+      background: rgba(255,255,255,0.2);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: width 0.5s, height 0.5s;
+    }
+    button:active::after { width: 300px; height: 300px; }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #2dd4bf, #14b8a6);
+      box-shadow: 0 8px 25px rgba(45, 212, 191, 0.35);
+    }
+    .btn-primary:hover { box-shadow: 0 12px 30px rgba(45, 212, 191, 0.5); transform: translateY(-2px); }
+
+    .btn-violet {
+      background: linear-gradient(135deg, #a78bfa, #7c3aed);
+      box-shadow: 0 8px 25px rgba(167, 139, 250, 0.3);
+    }
+    .btn-rose {
+      background: linear-gradient(135deg, #f0abfc, #d946ef);
+      box-shadow: 0 8px 25px rgba(240, 171, 252, 0.25);
+    }
+    .btn-amber {
+      background: linear-gradient(135deg, #fcd34d, #f59e0b);
+      box-shadow: 0 8px 25px rgba(252, 211, 77, 0.3);
+      color: #1e293b;
+    }
+    .btn-outline {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.3);
+    }
+    .btn-outline:hover { background: rgba(255,255,255,0.2); }
+
+    .btn-small { padding: 0.8rem 1.5rem; font-size: 0.85rem; }
+
+    /* ========== BUTTON GROUP (horizontal) ========== */
+    .button-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 1.5rem 0;
+    }
+    .button-row .action-btn {
+      flex: 1;
+      min-width: 80px;
+      padding: 0.9rem 0.5rem;
+      border-radius: 40px;
+      font-size: 0.8rem;
+    }
+    .copy-user { background: linear-gradient(135deg, #7dd3fc, #0ea5e9); }
+    .open-panel { background: linear-gradient(135deg, #5eead4, #14b8a6); }
+    .copy-pass { background: linear-gradient(135deg, #f0abfc, #d946ef); }
+
+    /* ========== INFO BOX ========== */
+    .info-bubble {
+      background: rgba(0,0,0,0.25);
+      backdrop-filter: blur(12px);
+      border-radius: 20px;
+      padding: 1.2rem 1.4rem;
+      font-size: 0.85rem;
+      line-height: 1.7;
+      border: 1px solid rgba(255,255,255,0.1);
+      margin: 1.5rem 0;
+      color: var(--text-dim);
+    }
+
+    /* ========== RESULT & ADMIN BOX ========== */
+    #result, #adminResult {
+      background: rgba(0,0,0,0.25);
+      backdrop-filter: blur(10px);
+      border-radius: 18px;
+      padding: 1.2rem;
+      margin: 1rem 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-size: 0.85rem;
+      max-height: 220px;
+      overflow-y: auto;
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #e2e8f0;
+    }
+
+    /* ========== CONTACT ICONS ========== */
+    .contact-row {
+      display: flex;
+      justify-content: center;
+      gap: 2.2rem;
+      margin-top: 2rem;
+      font-size: 1.8rem;
+    }
+    .contact-row a {
+      color: rgba(255,255,255,0.6);
+      transition: var(--transition-smooth);
+    }
+    .contact-row a:hover {
+      color: #fff;
+      transform: scale(1.2) rotate(5deg);
+      filter: drop-shadow(0 0 12px rgba(94,234,212,0.6));
+    }
+
+    /* ========== MODAL ========== */
+    .custom-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(15px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-content {
+      background: rgba(30, 30, 50, 0.75);
+      backdrop-filter: blur(30px);
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 36px;
+      padding: 2.2rem;
+      width: 90%;
+      max-width: 440px;
+      box-shadow: 0 40px 80px rgba(0,0,0,0.7);
+      animation: modalPop 0.35s ease-out;
+    }
+    @keyframes modalPop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+    /* ========== TOAST ========== */
+    .custom-toast {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: rgba(20, 20, 35, 0.8);
+      backdrop-filter: blur(25px);
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 60px;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transform: translateY(150%);
+      transition: transform 0.5s cubic-bezier(0.22,1,0.36,1);
+      z-index: 1200;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+      max-width: 360px;
+    }
+    .custom-toast.show { transform: translateY(0); }
+
+    /* responsive */
+    @media (max-width: 520px) {
+      .liquid-card { padding: 1.5rem 1.2rem; }
+      .button-row { flex-direction: column; }
+      .contact-row { gap: 1.5rem; }
+      .custom-toast { left: 20px; right: 20px; bottom: 20px; max-width: none; }
+    }
+  </style>
 </head>
-<body> 
-<!-- CUSTOM MODAL -->
-<div id="customModal" class="custom-modal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <div id="modalIcon" class="modal-icon warning">
-        <i class="fas fa-exclamation-triangle"></i>
+<body>
+  <!-- LIQUID BLOBS BACKGROUND -->
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+
+  <div class="app-shell">
+    <!-- CUSTOM MODAL -->
+    <div id="customModal" class="custom-modal">
+      <div class="modal-content">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:1rem;">
+          <div id="modalIcon" style="width:44px;height:44px;border-radius:50%;background:rgba(94,234,212,0.2);display:flex;align-items:center;justify-content:center;"><i class="fas fa-question"></i></div>
+          <h3 id="modalTitle" style="margin:0;">Konfirmasi</h3>
+        </div>
+        <p id="modalMessage" style="color:#e2e8f0; line-height:1.5;">Pesan</p>
+        <div style="display:flex; gap:12px; margin-top:1.8rem;">
+          <button id="modalCancel" class="btn-outline" style="flex:1;">Batal</button>
+          <button id="modalConfirm" class="btn-primary" style="flex:1;">Lanjut</button>
+        </div>
       </div>
-      <h3 id="modalTitle" class="modal-title">Konfirmasi</h3>
     </div>
-    <p id="modalMessage" class="modal-message">Pesan konfirmasi akan muncul di sini</p>
-    <div class="modal-buttons">
-      <button id="modalCancel" class="modal-btn modal-btn-cancel">
-        <i class="fas fa-times"></i> Batal
-      </button>
-      <button id="modalConfirm" class="modal-btn modal-btn-confirm">
-        <i class="fas fa-check"></i> Lanjutkan
-      </button>
+
+    <!-- TOAST -->
+    <div id="customToast" class="custom-toast">
+      <div id="toastIcon" style="width:36px;height:36px;border-radius:50%;background:rgba(94,234,212,0.3);display:flex;align-items:center;justify-content:center;"><i class="fas fa-check"></i></div>
+      <span id="toastMessage" style="font-weight:500;">Notifikasi</span>
+    </div>
+
+    <!-- LOGIN USER -->
+    <div class="liquid-card" id="loginDiv">
+      <div class="status-pill" id="serverStatus"><span class="status-dot"></span> CHECKING...</div>
+      <h1>✦ LIQUID CPANEL</h1>
+      <p style="color:#cbd5e1; margin-bottom:1.8rem; font-weight:500;">Reseller Panel Glass Liquid</p>
+      <div class="input-group">
+        <i class="fas fa-user input-icon"></i>
+        <input type="text" id="username" placeholder="Username">
+      </div>
+      <div class="input-group">
+        <i class="fas fa-lock input-icon"></i>
+        <input type="password" id="password" placeholder="Password">
+      </div>
+      <button id="loginBtn" class="btn-primary"><i class="fas fa-arrow-right-to-bracket"></i> Masuk</button>
+      <div style="text-align:center; margin:1.5rem 0;">
+        <a href="#" id="switchToAdmin" style="color:#fcd34d; text-decoration:none; font-size:0.9rem;"><i class="fas fa-crown"></i> Admin Mode</a>
+      </div>
+      <div id="loginError" style="color:#fca5a5; text-align:center;"></div>
+      <div style="text-align:center; margin-top:1rem; font-size:0.85rem; color:#94a3b8;">
+        Belum punya akun? <a href="https://t.me/angelhostingg" target="_blank" style="color:#7dd3fc;">Beli sekarang</a>
+      </div>
+    </div>
+
+    <!-- ADMIN LOGIN -->
+    <div class="liquid-card" id="adminLoginDiv" style="display:none;">
+      <div class="status-pill status-off"><span class="status-dot"></span> ADMIN ACCESS</div>
+      <h1><i class="fas fa-crown"></i> Admin</h1>
+      <div class="input-group">
+        <i class="fas fa-user-shield input-icon"></i>
+        <input type="text" id="adminUsername" placeholder="Admin Username">
+      </div>
+      <div class="input-group">
+        <i class="fas fa-key input-icon"></i>
+        <input type="password" id="adminPassword" placeholder="Admin Password">
+      </div>
+      <button id="adminLoginBtn" class="btn-amber"><i class="fas fa-shield"></i> Login Admin</button>
+      <button id="backToUserBtn" class="btn-outline" style="margin-top:10px;"><i class="fas fa-user"></i> User Login</button>
+      <div id="adminLoginError" style="color:#fca5a5; text-align:center;"></div>
+    </div>
+
+    <!-- MAIN PANEL -->
+    <div class="liquid-card" id="panel" style="display:none;">
+      <div class="status-pill" id="serverStatusPanel"><span class="status-dot"></span> ONLINE</div>
+      <div class="info-bubble">
+        📍 ᴄᴀᴛᴀᴛᴀɴ ᴘᴇɴᴛɪɴɢ:<br>
+        • PANEL JANGAN DI DDOS • TUTUPI DOMAIN<br>
+        • ALL TRANSAKSI NO REFUND • EXPIRED ±1 BULAN<br>
+        • BIKIN SERVER HARUS DIPAKAI • JOIN GRUB (WA)
+      </div>
+      <h2>Buat Server</h2>
+      <div class="input-group">
+        <i class="fas fa-server input-icon"></i>
+        <input type="text" id="serverName" placeholder="Nama Server" maxlength="20">
+      </div>
+      <div class="input-group">
+        <i class="fas fa-memory input-icon"></i>
+        <select id="serverRam"></select>
+      </div>
+      <button id="createBtn" class="btn-primary"><i class="fas fa-rocket"></i> Buat Server</button>
+      <div class="button-row">
+        <button id="listBtn" class="btn-outline btn-small"><i class="fas fa-list"></i> Jumlah</button>
+        <button id="historyBtn" class="btn-outline btn-small"><i class="fas fa-clock"></i> Riwayat</button>
+      </div>
+      <div id="result"></div>
+      <div class="button-row" id="actionButtons" style="display:none;">
+        <button class="action-btn copy-user" id="copyUserBtn"><i class="fas fa-user"></i> User</button>
+        <button class="action-btn open-panel" id="openPanelBtn"><i class="fas fa-link"></i> Panel</button>
+        <button class="action-btn copy-pass" id="copyPassBtn"><i class="fas fa-key"></i> Pass</button>
+      </div>
+      <div style="text-align:center; margin:1.5rem 0;">
+        <a href="#" id="switchToAdminFromPanel" style="color:#fcd34d; text-decoration:none; font-size:0.9rem;"><i class="fas fa-crown"></i> Switch Admin</a>
+      </div>
+      <button id="logoutBtn" class="btn-rose"><i class="fas fa-sign-out"></i> Logout</button>
+      <div class="contact-row">
+        <a href="https://chat.whatsapp.com/CoY2paBPem72BNAPvAjgyJ" target="_blank"><i class="fab fa-whatsapp"></i></a>
+        <a href="https://www.bimxyz.my.id" target="_blank"><i class="fas fa-headset"></i></a>
+      </div>
+    </div>
+
+    <!-- ADMIN PANEL -->
+    <div class="liquid-card" id="adminPanel" style="display:none;">
+      <div class="status-pill"><span class="status-dot"></span> ADMIN MODE</div>
+      <h2><i class="fas fa-crown"></i> Admin Control</h2>
+      <div class="info-bubble">
+        <i class="fas fa-shield-alt"></i> Fungsi Admin<br> • Buat akun • Lihat server • Monitor
+      </div>
+      <h3>Buat Akun Baru</h3>
+      <div class="input-group">
+        <i class="fas fa-user-plus input-icon"></i>
+        <input type="text" id="newUsername" placeholder="Username (min 3)">
+      </div>
+      <div class="input-group">
+        <i class="fas fa-lock input-icon"></i>
+        <input type="password" id="newPassword" placeholder="Password (min 6)">
+      </div>
+      <div class="input-group">
+        <i class="fas fa-envelope input-icon"></i>
+        <input type="email" id="newEmail" placeholder="Email (optional)">
+      </div>
+      <div class="input-group">
+        <i class="fas fa-user-cog input-icon"></i>
+        <select id="accountType">
+          <option value="user">Regular User</option>
+          <option value="admin">Admin Root</option>
+        </select>
+      </div>
+      <button id="createAccountBtn" class="btn-amber"><i class="fas fa-plus-circle"></i> Buat Akun</button>
+      <div class="button-row">
+        <button id="listAllAccountsBtn" class="btn-violet btn-small"><i class="fas fa-users"></i> List Akun</button>
+        <button id="listAllServersBtn" class="btn-outline btn-small"><i class="fas fa-chart-bar"></i> Stats</button>
+      </div>
+      <div id="adminResult"></div>
+      <button id="adminLogoutBtn" class="btn-rose"><i class="fas fa-sign-out"></i> Logout Admin</button>
+    </div>
+
+    <!-- RIWAYAT -->
+    <div class="liquid-card" id="historySection" style="display:none;">
+      <h2>Riwayat Server</h2>
+      <div id="historyList"></div>
+      <button id="backBtn" class="btn-outline"><i class="fas fa-arrow-left"></i> Kembali</button>
     </div>
   </div>
-</div>
-
-<!-- CUSTOM TOAST -->
-<div id="customToast" class="custom-toast">
-  <div id="toastIcon" class="toast-icon success">
-    <i class="fas fa-check"></i>
-  </div>
-  <p id="toastMessage" class="toast-message">Pesan notifikasi</p>
-</div>
-
-<!-- LOGIN PANEL -->
-<div class="card" id="loginDiv">
-  <div class="server-status" id="serverStatus">Checking server...</div>
-  <h1>Reseller Panel Login</h1>
-  <input type="text" id="username" placeholder="Username">
-  <div style="position: relative; width: 100%;">
-  <input type="password" id="password" placeholder="Password" autocomplete="off" style="width: 100%;">
-  </div>
-  <button id="loginBtn">Login</button>
-  
-  <div style="text-align:center; margin-top:10px;">
-    <a href="#" id="switchToAdmin" style="color:#f0a73a; text-decoration:none; font-size:13px;">
-      <i class="fas fa-crown"></i> Login as Admin
-    </a>
-  </div>
-  
-  <div id="loginError" style="color:red; text-align:center; margin-top:5px;"></div>
-
-  <div style="text-align:center; margin-top:15px; font-size:13px;">
-    Belum punya akun? 
-    <a href="https://t.me/angelhostingg" target="_blank" style="color:#58a6ff; text-decoration:none;">
-      <b>Beli sekarang</b>
-    </a>
-  </div>
-</div>
-
-<!-- ADMIN LOGIN PANEL -->
-<div class="card" id="adminLoginDiv" style="display:none;">
-  <div class="server-status"><span class="maintenance">ADMIN ACCESS</span></div>
-  <h1><i class="fas fa-crown"></i> Admin Panel Login</h1>
-  <input type="text" id="adminUsername" placeholder="Admin Username">
-  <input type="password" id="adminPassword" placeholder="Admin Password">
-  <button id="adminLoginBtn" class="btn-admin">Login as Admin</button>
-  <button id="backToUserBtn" style="background:#1f6feb; margin-top:5px;">Back to User Login</button>
-  <div id="adminLoginError" style="color:red; text-align:center; margin-top:5px;"></div>
-</div>
-
-<!-- CPANEL UTAMA -->
-<div class="card" id="panel" style="display:none;">
-  <div class="server-status" id="serverStatusPanel">Checking server...</div>
-  <div class="info">
-    📍 ᴄᴀᴛᴀᴛᴀɴ ᴘᴇɴᴛɪɴɢ:
-    <br>• PANEL JANGAN DI DDOS
-    <br>• TUTUPI DOMAIN PANEL KETIKA DI SCREENSHOT
-    <br>• DOMAIN PANEL JANGAN DI SEBAR
-    <br>• ALL TRANSAKSI NO REFUND
-    <br>• EXPIRED PANEL ±1 BULAN PENUH
-    <br>• BIKIN SERVER HARUS DIPAKAI
-    <br>• MASUK GRUB INFORMATION (IKON WHATSAPP DIBAWAH) UNTIK UPDATE STATUS
-  </div>
-  <h2>Buat Server</h2>
-  <input type="text" id="serverName" placeholder="Nama Server" maxlength="20">
-  <select id="serverRam"></select>
-  <button id="createBtn">Buat Server</button>
-  <button id="listBtn">Lihat Jumlah Server</button>
-  <button id="historyBtn">Lihat Riwayat</button>
-  <div id="result"></div>
-  
-  <div id="actionButtons" class="button-group" style="display: none;">
-    <button class="action-btn copy-user" id="copyUserBtn">
-      <i class="fas fa-user"></i> Copy User
-    </button>
-    <button class="action-btn open-panel" id="openPanelBtn">
-      <i class="fas fa-external-link-alt"></i> Buka Panel
-    </button>
-    <button class="action-btn copy-pass" id="copyPassBtn">
-      <i class="fas fa-key"></i> Copy Pass
-    </button>
-  </div>
-  
-  <div style="text-align:center; margin-top:10px;">
-    <a href="#" id="switchToAdminFromPanel" style="color:#f0a73a; text-decoration:none; font-size:13px;">
-      <i class="fas fa-crown"></i> Switch to Admin Panel
-    </a>
-  </div>
-  
-  <button id="logoutBtn" style="margin-top:10px;">Logout</button>
-  <div class="contact">
-    <a href="https://chat.whatsapp.com/CoY2paBPem72BNAPvAjgyJ" target="_blank"><i class="fab fa-whatsapp"></i></a>
-    <a href="https://www.bimxyz.my.id" target="_blank"><i class="fas fa-headset"></i></a>
-  </div>
-</div>
-
-<!-- ADMIN PANEL UTAMA -->
-<div class="card" id="adminPanel" style="display:none;">
-  <div class="server-status"><span class="online">ADMIN MODE</span></div>
-  
-  <h2><i class="fas fa-crown"></i> Admin Control Panel</h2>
-  
-  <div class="info" style="border-color:#f0a73a;">
-    <i class="fas fa-shield-alt"></i> <strong>Admin Functions:</strong><br>
-    • Create User/Admin Accounts<br>
-    • View All Servers<br>
-    • Manage User Limits<br>
-    • System Monitoring
-  </div>
-  
-  <h3><i class="fas fa-user-plus"></i> Create New Account</h3>
-  <input type="text" id="newUsername" placeholder="New Username (min 3 chars)" maxlength="20">
-  <input type="password" id="newPassword" placeholder="New Password (min 6 chars)">
-  <input type="email" id="newEmail" placeholder="Email (optional)">
-  
-  <select id="accountType">
-    <option value="user">Regular User</option>
-    <option value="admin">Admin (Root Admin)</option>
-  </select>
-  
-  <button id="createAccountBtn" class="btn-admin">
-    <i class="fas fa-plus-circle"></i> Create Account
-  </button>
-  <button id="listAllAccountsBtn" style="background:#9c27b0;">
-    <i class="fas fa-users"></i> List All Accounts
-  </button>
-  <button id="listAllServersBtn" style="background:#ff9800;">
-    <i class="fas fa-server"></i> System Stats
-  </button>
-  
-  <div id="adminResult" style="margin-top:15px; background:#0d1117; padding:10px; border-radius:8px; min-height:50px; max-height:300px; overflow-y:auto;"></div>
-  
-  <button id="adminLogoutBtn" style="background:#da3633; margin-top:20px;">
-    <i class="fas fa-sign-out-alt"></i> Logout Admin
-  </button>
-</div>
-
-<!-- RIWAYAT SERVER -->
-<div class="card" id="historySection" style="display:none;">
-  <h2>Riwayat Server</h2>
-  <div id="historyList"></div>
-  <button id="backBtn">Kembali</button>
-</div>
 
 <script>
-// ======================
-// SIMPLE SECURITY CONFIG
-// ======================
-let currentSessionId = localStorage.getItem('session_id') || '';
-let adminSessionId = localStorage.getItem('admin_session_id') || '';
-let loginAttemptCount = 0;
-const MAX_LOGIN_ATTEMPTS = 5;
+  (function() {
+    // ====================== STATE & REFS ======================
+    let currentSessionId = localStorage.getItem('session_id') || '';
+    let adminSessionId = localStorage.getItem('admin_session_id') || '';
+    let loginAttemptCount = 0;
+    const MAX_LOGIN_ATTEMPTS = 5;
+    let currentServerData = null;
 
-// ======================
-// CUSTOM ALERT SYSTEM
-// ======================
-const customModal = document.getElementById('customModal');
-const modalTitle = document.getElementById('modalTitle');
-const modalMessage = document.getElementById('modalMessage');
-const modalIcon = document.getElementById('modalIcon');
-const modalCancel = document.getElementById('modalCancel');
-const modalConfirm = document.getElementById('modalConfirm');
+    const $ = (id) => document.getElementById(id);
+    const loginDiv = $('loginDiv');
+    const panel = $('panel');
+    const adminLoginDiv = $('adminLoginDiv');
+    const adminPanel = $('adminPanel');
+    const historySection = $('historySection');
+    const loginBtn = $('loginBtn');
+    const loginError = $('loginError');
+    const resultDiv = $('result');
+    const serverStatus = $('serverStatus');
+    const serverStatusPanel = $('serverStatusPanel');
+    const ramSelect = $('serverRam');
+    const historyBtn = $('historyBtn');
+    const historyList = $('historyList');
+    const backBtn = $('backBtn');
+    const actionButtons = $('actionButtons');
+    const copyUserBtn = $('copyUserBtn');
+    const openPanelBtn = $('openPanelBtn');
+    const copyPassBtn = $('copyPassBtn');
+    const adminLoginBtn = $('adminLoginBtn');
+    const adminUsername = $('adminUsername');
+    const adminPassword = $('adminPassword');
+    const adminLoginError = $('adminLoginError');
+    const backToUserBtn = $('backToUserBtn');
+    const switchToAdmin = $('switchToAdmin');
+    const switchToAdminFromPanel = $('switchToAdminFromPanel');
+    const adminLogoutBtn = $('adminLogoutBtn');
+    const createAccountBtn = $('createAccountBtn');
+    const newUsername = $('newUsername');
+    const newPassword = $('newPassword');
+    const newEmail = $('newEmail');
+    const accountType = $('accountType');
+    const listAllAccountsBtn = $('listAllAccountsBtn');
+    const listAllServersBtn = $('listAllServersBtn');
+    const adminResult = $('adminResult');
 
-const customToast = document.getElementById('customToast');
-const toastMessage = document.getElementById('toastMessage');
-const toastIcon = document.getElementById('toastIcon');
+    const customModal = $('customModal');
+    const modalTitle = $('modalTitle');
+    const modalMessage = $('modalMessage');
+    const modalIcon = $('modalIcon');
+    const modalCancel = $('modalCancel');
+    const modalConfirm = $('modalConfirm');
+    const customToast = $('customToast');
+    const toastMessage = $('toastMessage');
+    const toastIcon = $('toastIcon');
 
-let currentResolve = null;
+    // ====================== RAM ======================
+    const ramOptions = [
+      {display: '1 GB', value: '1'}, {display: '2 GB', value: '2'}, {display: '3 GB', value: '3'},
+      {display: '4 GB', value: '4'}, {display: '5 GB', value: '5'}, {display: '6 GB', value: '6'},
+      {display: '7 GB', value: '7'}, {display: '8 GB', value: '8'}, {display: '9 GB', value: '9'},
+      {display: '10 GB', value: '10'}, {display: 'UNLIMITED', value: 'unlimited'}
+    ];
+    ramSelect.innerHTML = '<option value="" disabled selected>🎯 Pilih RAM</option>';
+    ramOptions.forEach(item => {
+      const opt = document.createElement('option');
+      opt.value = item.value; opt.textContent = item.display; ramSelect.appendChild(opt);
+    });
 
-function showConfirm(title, message, type = 'warning', confirmText = 'Lanjutkan') {
-  return new Promise((resolve) => {
-    modalTitle.textContent = title;
-    modalMessage.textContent = message;
-    currentResolve = resolve;
-    
-    modalIcon.className = 'modal-icon ' + type;
-    const iconClass = {
-      warning: 'fas fa-exclamation-triangle',
-      danger: 'fas fa-trash-alt',
-      info: 'fas fa-info-circle',
-      success: 'fas fa-check-circle'
-    }[type] || 'fas fa-exclamation-triangle';
-    
-    modalIcon.innerHTML = `<i class="${iconClass}"></i>`;
-    
-    modalConfirm.className = `modal-btn ${type === 'danger' ? 'modal-btn-delete' : 'modal-btn-confirm'}`;
-    modalConfirm.innerHTML = `<i class="fas fa-check"></i> ${confirmText}`;
-    
-    customModal.style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-  });
-}
-
-function showToast(message, type = 'success', duration = 3000) {
-  toastMessage.textContent = message;
-  toastIcon.className = 'toast-icon ' + type;
-  
-  const iconClass = {
-    success: 'fas fa-check',
-    error: 'fas fa-times-circle',
-    info: 'fas fa-info-circle',
-    warning: 'fas fa-exclamation-triangle'
-  }[type] || 'fas fa-check';
-  
-  toastIcon.innerHTML = `<i class="${iconClass}"></i>`;
-  
-  const borderColor = {
-    success: '#2ea043',
-    error: '#da3633',
-    info: '#1f6feb',
-    warning: '#f0a73a'
-  }[type] || '#2ea043';
-  
-  customToast.style.borderLeftColor = borderColor;
-  customToast.classList.add('show');
-  
-  setTimeout(() => {
-    customToast.classList.remove('show');
-  }, duration);
-}
-
-modalCancel.addEventListener('click', () => {
-  customModal.style.display = 'none';
-  document.body.style.overflow = 'auto';
-  if (currentResolve) {
-    currentResolve(false);
-    currentResolve = null;
-  }
-});
-
-modalConfirm.addEventListener('click', () => {
-  customModal.style.display = 'none';
-  document.body.style.overflow = 'auto';
-  if (currentResolve) {
-    currentResolve(true);
-    currentResolve = null;
-  }
-});
-
-customModal.addEventListener('click', (e) => {
-  if (e.target === customModal) {
-    customModal.style.display = 'none';
-    document.body.style.overflow = 'auto';
-    if (currentResolve) {
-      currentResolve(false);
-      currentResolve = null;
+    // ====================== TOAST & MODAL ======================
+    function showToast(msg, type='success') {
+      toastMessage.textContent = msg;
+      toastIcon.innerHTML = type==='success' ? '<i class="fas fa-check"></i>' : type==='error' ? '<i class="fas fa-times"></i>' : '<i class="fas fa-info"></i>';
+      customToast.classList.add('show');
+      setTimeout(()=>customToast.classList.remove('show'), 2500);
     }
-  }
-});
-
-// ======================
-// UI ELEMENTS
-// ======================
-const loginDiv = document.getElementById('loginDiv');
-const panel = document.getElementById('panel');
-const historySection = document.getElementById('historySection');
-const loginBtn = document.getElementById('loginBtn');
-const loginError = document.getElementById('loginError');
-const resultDiv = document.getElementById('result');
-const serverStatus = document.getElementById('serverStatus');
-const serverStatusPanel = document.getElementById('serverStatusPanel');
-const ramSelect = document.getElementById('serverRam');
-const historyBtn = document.getElementById('historyBtn');
-const historyList = document.getElementById('historyList');
-const backBtn = document.getElementById('backBtn');
-
-let currentServerData = null;
-const actionButtons = document.getElementById('actionButtons');
-const copyUserBtn = document.getElementById('copyUserBtn');
-const openPanelBtn = document.getElementById('openPanelBtn');
-const copyPassBtn = document.getElementById('copyPassBtn');
-
-// ======================
-// ADMIN UI ELEMENTS
-// ======================
-const adminLoginDiv = document.getElementById('adminLoginDiv');
-const adminPanel = document.getElementById('adminPanel');
-const adminLoginBtn = document.getElementById('adminLoginBtn');
-const adminUsername = document.getElementById('adminUsername');
-const adminPassword = document.getElementById('adminPassword');
-const adminLoginError = document.getElementById('adminLoginError');
-const backToUserBtn = document.getElementById('backToUserBtn');
-const switchToAdmin = document.getElementById('switchToAdmin');
-const switchToAdminFromPanel = document.getElementById('switchToAdminFromPanel');
-const adminLogoutBtn = document.getElementById('adminLogoutBtn');
-const createAccountBtn = document.getElementById('createAccountBtn');
-const newUsername = document.getElementById('newUsername');
-const newPassword = document.getElementById('newPassword');
-const newEmail = document.getElementById('newEmail');
-const accountType = document.getElementById('accountType');
-const listAllAccountsBtn = document.getElementById('listAllAccountsBtn');
-const listAllServersBtn = document.getElementById('listAllServersBtn');
-const adminResult = document.getElementById('adminResult');
-
-// ======================
-// RAM OPTIONS
-// ======================
-const ramOptions = [
-  {display: '🔰 1 GB RAM', value: '1'},
-  {display: '🔰 2 GB RAM', value: '2'},
-  {display: '🔰 3 GB RAM', value: '3'},
-  {display: '🔰 4 GB RAM', value: '4'},
-  {display: '🔰 5 GB RAM', value: '5'},
-  {display: '🔰 6 GB RAM', value: '6'},
-  {display: '🔰 7 GB RAM', value: '7'},
-  {display: '🔰 8 GB RAM', value: '8'},
-  {display: '🔰 9 GB RAM', value: '9'},
-  {display: '🔰 10 GB RAM', value: '10'},
-  {display: '🚀 UNLIMITED RAM', value: 'unlimited'}
-];
-
-ramSelect.innerHTML = '<option value="" disabled selected>🎯 Pilih kapasitas RAM...</option>';
-ramOptions.forEach((item) => {
-  const opt = document.createElement('option');
-  opt.value = item.value;
-  opt.textContent = item.display;
-  ramSelect.appendChild(opt);
-});
-
-// ======================
-// SERVER STATUS CHECK
-// ======================
-(async () => {
-  try {
-    const res = await fetch('/api/server');
-    const data = await res.json();
-    const statusHTML = `<span class="${data.success?'online':'maintenance'}">${data.success?'ONLINE':'OFFLINE'}</span>`;
-    serverStatus.innerHTML = statusHTML;
-    serverStatusPanel.innerHTML = statusHTML;
-  } catch {
-    const offlineHTML = `<span class="maintenance">OFFLINE</span>`;
-    serverStatus.innerHTML = offlineHTML;
-    serverStatusPanel.innerHTML = offlineHTML;
-  }
-})();
-
-// ======================
-// ACTION BUTTONS
-// ======================
-function showActionButtons(data) {
-  currentServerData = data;
-  actionButtons.style.display = 'flex';
-}
-
-function hideActionButtons() {
-  actionButtons.style.display = 'none';
-  currentServerData = null;
-}
-
-copyUserBtn.addEventListener('click', () => {
-  if (!currentServerData || !currentServerData.username) return;
-  navigator.clipboard.writeText(currentServerData.username)
-    .then(() => showToast(`Username "${currentServerData.username}" berhasil disalin`, 'success'))
-    .catch(err => {
-      console.error('Copy failed:', err);
-      showToast('Gagal menyalin username', 'error');
-    });
-});
-
-openPanelBtn.addEventListener('click', () => {
-  if (!currentServerData || !currentServerData.panel) return;
-  window.open(currentServerData.panel, '_blank');
-});
-
-copyPassBtn.addEventListener('click', () => {
-  if (!currentServerData || !currentServerData.password) return;
-  navigator.clipboard.writeText(currentServerData.password)
-    .then(() => showToast('Password berhasil disalin ke clipboard', 'success'))
-    .catch(err => {
-      console.error('Copy failed:', err);
-      showToast('Gagal menyalin password', 'error');
-    });
-});
-
-// ======================
-// SESSION CHECK (MODIFIED)
-// ======================
-function checkLogin(){
-  currentSessionId = localStorage.getItem('session_id') || '';
-  
-  if(currentSessionId){
-    fetch('/api/server', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        action: 'verify',
-        session_id: currentSessionId
-      })
-    })
-    .then(res => res.json())
-    .then(data => {
-      if(data.success){
-        loginDiv.style.display='none';
-        panel.style.display='block';
-      } else {
-        localStorage.removeItem('session_id');
-        currentSessionId = '';
-        loginDiv.style.display='block';
-        panel.style.display='none';
-        hideActionButtons();
-      }
-    })
-    .catch(() => {
-      localStorage.removeItem('session_id');
-      currentSessionId = '';
-      loginDiv.style.display='block';
-      panel.style.display='none';
-      hideActionButtons();
-    });
-  } else {
-    loginDiv.style.display='block';
-    panel.style.display='none';
-    hideActionButtons();
-  }
-}
-
-// Check session on load
-checkLogin();
-
-// Auto-check session setiap 30 detik
-setInterval(checkLogin, 30000);
-
-// ======================
-// LOGIN HANDLER (MODIFIED)
-// ======================
-loginBtn.addEventListener('click', async ()=>{
-  const username = document.getElementById('username').value.trim();
-  const password = document.getElementById('password').value.trim();
-  loginError.textContent="";
-  
-  loginAttemptCount++;
-  if(loginAttemptCount > MAX_LOGIN_ATTEMPTS){
-    loginError.textContent = "Terlalu banyak percobaan login. Coba lagi nanti.";
-    showToast('Terlalu banyak percobaan login', 'error');
-    return;
-  }
-  
-  try{
-    const res = await fetch('/api/server',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        action:'login', 
-        username, 
-        password
-      })
-    });
-    const data = await res.json();
-    
-    if(data.success){
-      loginAttemptCount = 0;
-      
-      if(data.session_id){
-        localStorage.setItem('session_id', data.session_id);
-        currentSessionId = data.session_id;
-      }
-      
-      const now = new Date();
-      localStorage.setItem('username', username);
-      localStorage.setItem('loginTime', now.toISOString());
-      
-      loginDiv.style.display='none';
-      panel.style.display='block';
-      hideActionButtons();
-      
-      showToast('Login berhasil!', 'success');
-    } else {
-      loginError.textContent = data.message || "Login gagal";
-      
-      const attemptsLeft = MAX_LOGIN_ATTEMPTS - loginAttemptCount;
-      if(attemptsLeft > 0){
-        showToast(`Login gagal. Sisa percobaan: ${attemptsLeft}`, 'error');
-      } else {
-        showToast('Terlalu banyak percobaan login', 'error');
-      }
-    }
-  }catch(err){
-    loginError.textContent = err.message;
-    showToast('Error koneksi server', 'error');
-  }
-});
-
-// ======================
-// ADMIN LOGIN HANDLER
-// ======================
-switchToAdmin.addEventListener('click', (e) => {
-  e.preventDefault();
-  loginDiv.style.display = 'none';
-  adminLoginDiv.style.display = 'block';
-});
-
-switchToAdminFromPanel.addEventListener('click', (e) => {
-  e.preventDefault();
-  panel.style.display = 'none';
-  adminLoginDiv.style.display = 'block';
-});
-
-backToUserBtn.addEventListener('click', () => {
-  adminLoginDiv.style.display = 'none';
-  loginDiv.style.display = 'block';
-});
-
-adminLoginBtn.addEventListener('click', async () => {
-  const username = adminUsername.value.trim();
-  const password = adminPassword.value.trim();
-  adminLoginError.textContent = '';
-  
-  try {
-    const res = await fetch('/api/server', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        action: 'admin_login',
-        username: username,
-        password: password
-      })
-    });
-    
-    const data = await res.json();
-    
-    if (data.success) {
-      if (data.session_id) {
-        localStorage.setItem('admin_session_id', data.session_id);
-        adminSessionId = data.session_id;
-      }
-      
-      adminLoginDiv.style.display = 'none';
-      adminPanel.style.display = 'block';
-      showToast('Admin login successful!', 'success');
-      
-      // Clear inputs
-      adminUsername.value = '';
-      adminPassword.value = '';
-    } else {
-      adminLoginError.textContent = data.message || 'Login failed';
-      showToast('Admin login failed', 'error');
-    }
-  } catch (err) {
-    adminLoginError.textContent = 'Connection error';
-    showToast('Error connecting to server', 'error');
-  }
-});
-
-// ======================
-// ADMIN CREATE ACCOUNT (FIXED)
-// ======================
-createAccountBtn.addEventListener('click', async () => {
-  const username = newUsername.value.trim();
-  const password = newPassword.value.trim();
-  const type = accountType.value;
-  const email = newEmail.value.trim() || `${username}@admin.riskyhosting.com`;
-  
-  if (!username || username.length < 3) {
-    showToast('Username minimal 3 karakter', 'warning');
-    return;
-  }
-  
-  if (!password || password.length < 6) {
-    showToast('Password minimal 6 karakter', 'warning');
-    return;
-  }
-  
-  if (!adminSessionId) {
-    showToast('Session expired. Silakan login kembali.', 'error');
-    adminLoginDiv.style.display = 'block';
-    adminPanel.style.display = 'none';
-    return;
-  }
-  
-  adminResult.innerHTML = 'Creating account...';
-  
-  try {
-    const res = await fetch('/api/server', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        action: 'create_admin_account',
-        new_username: username,
-        new_password: password,
-        account_type: type,
-        email: email,
-        session_id: adminSessionId
-      })
-    });
-    
-    const data = await res.json();
-    
-    if (data.success) {
-      let html = `
-        <div style="color: #2ea043; margin-bottom: 15px;">
-          <i class="fas fa-check-circle"></i> <strong>Account Created Successfully!</strong>
-        </div>
-        <div class="account-item ${type === 'admin' ? 'account-admin' : 'account-user'}">
-          <strong>Username:</strong> ${escapeHTML(data.account?.username || username)}<br>
-          <strong>Password:</strong> ${escapeHTML(data.account?.password || password)}<br>
-          <strong>Email:</strong> ${escapeHTML(data.account?.email || email)}<br>
-          <strong>Type:</strong> ${escapeHTML(type === 'admin' ? 'Admin' : 'User')}<br>
-          <strong>Panel URL:</strong> ${escapeHTML(data.account?.panel_url || 'https://jaysukajanda.apcb.biz.id/auth/login')}
-        </div>
-        <div style="margin-top: 15px; background: #0d1117; padding: 10px; border-radius: 6px; font-size: 12px;">
-          <strong>Login Info:</strong><br>
-          ${escapeHTML(data.login_info || `Panel: https://jaysukajanda.apcb.biz.id/auth/login\nUsername: ${username}\nPassword: ${password}`)}
-        </div>
-      `;
-      
-      adminResult.innerHTML = html;
-      
-      // Clear inputs
-      newUsername.value = '';
-      newPassword.value = '';
-      newEmail.value = '';
-      
-      showToast(`${type === 'admin' ? 'Admin' : 'User'} account created successfully!`, 'success');
-    } else {
-      adminResult.innerHTML = 
-        `<div style="color: #da3633;">
-          <i class="fas fa-times-circle"></i> <strong>Error:</strong> ${escapeHTML(data.message || 'Unknown error')}
-        </div>`;
-      showToast('Failed to create account: ' + data.message, 'error');
-    }
-  } catch (err) {
-    adminResult.innerHTML = 
-      `<div style="color: #da3633;">
-        <i class="fas fa-times-circle"></i> <strong>Connection error:</strong> ${escapeHTML(err.message)}
-      </div>`;
-    showToast('Connection error', 'error');
-  }
-});
-
-// ======================
-// ADMIN LIST ALL ACCOUNTS (FIXED)
-// ======================
-listAllAccountsBtn.addEventListener('click', async () => {
-  if (!adminSessionId) {
-    showToast('Session expired. Silakan login kembali.', 'error');
-    adminLoginDiv.style.display = 'block';
-    adminPanel.style.display = 'none';
-    return;
-  }
-  
-  adminResult.innerHTML = 'Loading accounts...';
-  
-  try {
-    const res = await fetch('/api/server', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        action: 'list_all_accounts',
-        session_id: adminSessionId
-      })
-    });
-    
-    const data = await res.json();
-    
-    if (data.success && data.accounts) {
-      let html = `
-        <div style="margin-bottom: 15px;">
-          <i class="fas fa-users"></i> <strong>All Accounts (Total: ${data.total || 0})</strong>
-        </div>
-      `;
-      
-      data.accounts.forEach(account => {
-        const typeClass = account.is_admin ? 'account-admin' : 'account-user';
-        const typeLabel = account.is_admin ? 'Admin' : 'User';
-        const createdDate = new Date(account.created_at).toLocaleString();
-        
-        html += `
-          <div class="account-item ${typeClass}">
-            <strong>${escapeHTML(account.username)}</strong> 
-            <span class="admin-badge">${typeLabel}</span><br>
-            <small>Email: ${escapeHTML(account.email)}</small><br>
-            <small>Created: ${escapeHTML(createdDate)}</small><br>
-            <small>ID: ${escapeHTML(account.id)}</small>
-          </div>
-        `;
-      });
-      
-      adminResult.innerHTML = html;
-    } else {
-      adminResult.innerHTML = 
-        `<div style="color: #da3633;">
-          <i class="fas fa-times-circle"></i> <strong>Error:</strong> ${escapeHTML(data.message || 'Unknown error')}
-        </div>`;
-    }
-  } catch (err) {
-    adminResult.innerHTML = 
-      `<div style="color: #da3633;">
-        <i class="fas fa-times-circle"></i> <strong>Connection error:</strong> ${escapeHTML(err.message)}
-      </div>`;
-    showToast('Connection error', 'error');
-  }
-});
-
-// ======================
-// ADMIN SYSTEM STATS (FIXED)
-// ======================
-listAllServersBtn.addEventListener('click', async () => {
-  if (!adminSessionId) {
-    showToast('Session expired. Silakan login kembali.', 'error');
-    adminLoginDiv.style.display = 'block';
-    adminPanel.style.display = 'none';
-    return;
-  }
-  
-  adminResult.innerHTML = 'Loading system stats...';
-  
-  try {
-    const res = await fetch('/api/server', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        action: 'system_stats',
-        session_id: adminSessionId
-      })
-    });
-    
-    const data = await res.json();
-    
-    if (data.success && data.stats) {
-      const stats = data.stats;
-      const panelStatus = stats.panel_status === 'online' ? 
-        '<span style="color:#2ea043">ONLINE</span>' : 
-        '<span style="color:#da3633">OFFLINE</span>';
-      
-      let html = `
-        <div style="margin-bottom: 15px;">
-          <i class="fas fa-chart-bar"></i> <strong>System Statistics</strong>
-        </div>
-        <div class="account-item">
-          <strong>Panel Status:</strong> ${panelStatus}<br>
-          <strong>Total Servers:</strong> ${stats.total_servers || 0}<br>
-          <strong>Total Users:</strong> ${stats.total_users || 0}<br>
-          <strong>Admin Users:</strong> ${stats.admin_users || 0}<br>
-          <strong>Panel URL:</strong> ${escapeHTML(stats.panel_url || 'N/A')}<br>
-          <strong>Last Update:</strong> ${escapeHTML(stats.last_update ? new Date(stats.last_update).toLocaleString() : 'N/A')}
-        </div>
-      `;
-      
-      adminResult.innerHTML = html;
-    } else {
-      adminResult.innerHTML = 
-        `<div style="color: #da3633;">
-          <i class="fas fa-times-circle"></i> <strong>Error:</strong> ${escapeHTML(data.message || 'Unknown error')}
-        </div>`;
-    }
-  } catch (err) {
-    adminResult.innerHTML = 
-      `<div style="color: #da3633;">
-        <i class="fas fa-times-circle"></i> <strong>Connection error:</strong> ${escapeHTML(err.message)}
-      </div>`;
-    showToast('Connection error', 'error');
-  }
-});
-
-// ======================
-// ADMIN LOGOUT
-// ======================
-adminLogoutBtn.addEventListener('click', async () => {
-  try {
-    if (adminSessionId) {
-      await fetch('/api/server', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'logout',
-          session_id: adminSessionId
-        })
+    function showConfirm(title, msg, type='warning') {
+      return new Promise(resolve => {
+        modalTitle.textContent = title;
+        modalMessage.textContent = msg;
+        modalIcon.innerHTML = '<i class="fas fa-question"></i>';
+        customModal.style.display='flex';
+        modalConfirm.onclick = ()=>{ customModal.style.display='none'; resolve(true); };
+        modalCancel.onclick = ()=>{ customModal.style.display='none'; resolve(false); };
       });
     }
-  } catch (err) {
-    // Ignore
-  } finally {
-    localStorage.removeItem('admin_session_id');
-    adminSessionId = '';
-    adminPanel.style.display = 'none';
-    loginDiv.style.display = 'block';
-    showToast('Admin logged out', 'info');
-  }
-});
 
-// ======================
-// LOGOUT (MODIFIED)
-// ======================
-document.getElementById('logoutBtn').addEventListener('click', async ()=>{
-  try {
-    await fetch('/api/server', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        action: 'logout',
-        session_id: currentSessionId
-      })
-    });
-  } catch (err) {
-    // Ignore
-  } finally {
-    localStorage.removeItem('session_id');
-    localStorage.removeItem('username');
-    localStorage.removeItem('loginTime');
-    localStorage.removeItem('serverHistory');
-    
-    currentSessionId = '';
-    loginAttemptCount = 0;
-    
-    hideActionButtons();
-    location.reload();
-  }
-});
+    function hideAll() { [loginDiv, panel, adminLoginDiv, adminPanel, historySection].forEach(el=>el.style.display='none'); }
+    function showLogin() { hideAll(); loginDiv.style.display='block'; }
+    function showPanel() { hideAll(); panel.style.display='block'; }
+    function showAdminLogin() { hideAll(); adminLoginDiv.style.display='block'; }
+    function showAdminPanel() { hideAll(); adminPanel.style.display='block'; }
+    function showHistory() { hideAll(); historySection.style.display='block'; }
+    function hideAction() { actionButtons.style.display='none'; currentServerData=null; }
+    function showAction(data){ currentServerData=data; actionButtons.style.display='flex'; }
 
-// ======================
-// CREATE SERVER (MODIFIED - tambah session_id)
-// ======================
-document.getElementById('createBtn').addEventListener('click', async ()=>{
-  const name = document.getElementById('serverName').value.trim();
-  const ram = ramSelect.value;
-  
-  if(!name) {
-    showToast('Nama server harus diisi', 'warning');
-    return;
-  }
-  
-  if(!currentSessionId){
-    showToast('Session expired. Silakan login kembali.', 'error');
-    location.reload();
-    return;
-  }
-  
-  resultDiv.textContent="Membuat server...";
-  
-  try{
-    const res = await fetch('/api/server',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        action:'create', 
-        name, 
-        ram,
-        session_id: currentSessionId
-      })
-    });
-    
-    const data = await res.json();
-    if(data.success){
-      const ramDisplay = data.ram === 'unlimited' ? 'Unlimited' : `${data.ram} GB`;
-      resultDiv.textContent=`✅ Server berhasil dibuat!\nLogin Panel: ${data.panel}\nUsername: ${data.username}\nEmail: ${data.email}\nPassword: ${data.password}\nRAM: ${ramDisplay}`;
-
-      showActionButtons({
-        username: data.username,
-        password: data.password,
-        panel: data.panel
-      });
-
-      const history = JSON.parse(localStorage.getItem('serverHistory')||'[]');
-      history.push({
-        date: new Date().toLocaleString(),
-        username: data.username,
-        password: data.password,
-        panel: data.panel,
-        serverId: data.serverId
-      });
-      localStorage.setItem('serverHistory', JSON.stringify(history));
-      
-      showToast('✨ Server berhasil dibuat!', 'success');
-    } else {
-      resultDiv.textContent="❌ Gagal: "+data.message;
-      hideActionButtons();
-      showToast('Gagal membuat server: ' + data.message, 'error');
-      
-      if(data.message.includes('Session') || data.message.includes('expired')){
-        setTimeout(() => location.reload(), 2000);
-      }
+    async function checkServer() {
+      try {
+        const res = await fetch('/api/server');
+        const data = await res.json();
+        const html = data.success ? '<span class="status-dot"></span> ONLINE' : '<span class="status-dot"></span> OFFLINE';
+        serverStatus.innerHTML = html;
+        serverStatusPanel.innerHTML = html;
+      } catch { serverStatus.innerHTML = '<span class="status-dot"></span> OFFLINE'; serverStatusPanel.innerHTML = '<span class="status-dot"></span> OFFLINE'; }
     }
-  }catch(err){
-    resultDiv.textContent="⚠️ Error: "+err.message;
-    hideActionButtons();
-    showToast('Error koneksi server', 'error');
-  }
-});
+    checkServer();
 
-// ======================
-// LIST SERVERS (MODIFIED - tambah session_id)
-// ======================
-document.getElementById('listBtn').addEventListener('click', async ()=>{
-  if(!currentSessionId){
-    showToast('Session expired. Silakan login kembali.', 'error');
-    location.reload();
-    return;
-  }
-  
-  resultDiv.textContent="Mengambil jumlah server...";
-  
-  try{
-    const res = await fetch('/api/server', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        action: 'list',
-        session_id: currentSessionId
-      })
-    });
-    
-    const data = await res.json();
-    if(data.success) {
-      resultDiv.textContent=`📊 Jumlah server di panel: ${data.count}`;
-      showToast(`📊 Ditemukan ${data.count} server aktif`, 'info');
-    } else {
-      resultDiv.textContent="❌ Gagal ambil data: "+data.message;
-      showToast('Gagal mengambil data server', 'error');
+    // ====================== SESSION CHECK ======================
+    function checkLogin() {
+      currentSessionId = localStorage.getItem('session_id') || '';
+      if(currentSessionId) {
+        fetch('/api/server',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'verify',session_id:currentSessionId})})
+        .then(r=>r.json()).then(d=>{ if(d.success) showPanel(); else { localStorage.removeItem('session_id'); showLogin(); }})
+        .catch(()=>showLogin());
+      } else showLogin();
     }
-  }catch(err){
-    resultDiv.textContent="⚠️ Error: "+err.message;
-    showToast('Error koneksi server', 'error');
-  }
-});
+    checkLogin(); setInterval(checkLogin,30000);
 
-// ======================
-// HISTORY
-// ======================
-historyBtn.addEventListener('click', ()=>{
-  panel.style.display='none';
-  historySection.style.display='block';
-  hideActionButtons();
-  renderHistory();
-});
+    function checkAdminSession(){ if(localStorage.getItem('admin_session_id')) showAdminPanel(); }
+    checkAdminSession();
 
-backBtn.addEventListener('click', ()=>{
-  historySection.style.display='none';
-  panel.style.display='block';
-});
+    // ====================== ACTION BUTTONS ======================
+    copyUserBtn.onclick = ()=> currentServerData?.username && navigator.clipboard.writeText(currentServerData.username).then(()=>showToast('User disalin'));
+    openPanelBtn.onclick = ()=> currentServerData?.panel && window.open(currentServerData.panel,'_blank');
+    copyPassBtn.onclick = ()=> currentServerData?.password && navigator.clipboard.writeText(currentServerData.password).then(()=>showToast('Pass disalin'));
 
-function renderHistory(){
-  historyList.innerHTML='';
-  const history = JSON.parse(localStorage.getItem('serverHistory')||'[]');
-  if(history.length===0){
-    historyList.innerHTML='<p>Tidak ada riwayat server.</p>';
-    return;
-  }
-  
-  history.forEach((entry,i)=>{
-    const card = document.createElement('div');
-    card.className='card';
-    card.innerHTML=`
-      <strong>${escapeHTML(entry.username)}</strong><br>
-      Password: ${escapeHTML(entry.password)}<br>
-      Panel: <a href="${escapeHTML(entry.panel)}" target="_blank">${escapeHTML(entry.panel)}</a><br>
-      Tanggal: ${escapeHTML(entry.date)}
-    `;
-    
-    const delBtn = document.createElement('button');
-    delBtn.textContent='Hapus Server';
-    delBtn.className='deleteBtn';
-    delBtn.addEventListener('click', async ()=>{
-      if(!currentSessionId){
-        showToast('Session expired. Silakan login kembali.', 'error');
-        location.reload();
-        return;
-      }
-      
-      const confirmed = await showConfirm(
-        'Hapus Server',
-        `Server ${escapeHTML(entry.username)} akan dihapus permanen. Tindakan ini tidak dapat dibatalkan.`,
-        'danger',
-        'Ya, Hapus'
-      );
-      
-      if(!confirmed) return;
-      
-      try{
-        const res = await fetch('/api/server',{
-          method:'POST',
-          headers:{'Content-Type':'application/json'},
-          body:JSON.stringify({
-            action:'delete', 
-            serverId: entry.serverId,
-            session_id: currentSessionId
-          })
-        });
-        
+    // ====================== USER LOGIN ======================
+    loginBtn.onclick = async ()=>{
+      const u = $('username').value.trim(), p = $('password').value.trim();
+      loginError.textContent='';
+      if(++loginAttemptCount>MAX_LOGIN_ATTEMPTS){ loginError.textContent='Terlalu banyak percobaan'; return; }
+      try {
+        const res = await fetch('/api/server',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'login',username:u,password:p})});
         const data = await res.json();
         if(data.success){
-          showToast(`Server ${entry.username} berhasil dihapus`, 'success');
-          history.splice(i,1);
-          localStorage.setItem('serverHistory', JSON.stringify(history));
-          renderHistory();
-        } else {
-          showToast('Gagal menghapus server: ' + data.message, 'error');
-        }
-      }catch(err){
-        showToast('Error koneksi server', 'error');
-      }
-    });
-    
-    card.appendChild(delBtn);
-    historyList.appendChild(card);
-  });
-}
+          loginAttemptCount=0;
+          if(data.session_id){ localStorage.setItem('session_id',data.session_id); currentSessionId=data.session_id; }
+          showPanel(); hideAction(); showToast('Login sukses');
+        } else { loginError.textContent=data.message||'Gagal'; showToast('Gagal login','error'); }
+      } catch(e){ loginError.textContent='Connection error'; }
+    };
 
-// ======================
-// XSS PROTECTION FUNCTION
-// ======================
-function escapeHTML(text) {
-  if (typeof text !== 'string') return '';
-  const div = document.createElement('div');
-  div.textContent = text;
-  return div.innerHTML;
-}
+    // ====================== ADMIN LOGIN ======================
+    switchToAdmin.onclick = e=>{ e.preventDefault(); showAdminLogin(); };
+    switchToAdminFromPanel.onclick = e=>{ e.preventDefault(); showAdminLogin(); };
+    backToUserBtn.onclick = ()=>showLogin();
+    adminLoginBtn.onclick = async ()=>{
+      const u=adminUsername.value.trim(), p=adminPassword.value.trim();
+      adminLoginError.textContent='';
+      try {
+        const res = await fetch('/api/server',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'admin_login',username:u,password:p})});
+        const data = await res.json();
+        if(data.success){ if(data.session_id){ localStorage.setItem('admin_session_id',data.session_id); adminSessionId=data.session_id; } showAdminPanel(); adminUsername.value=''; adminPassword.value=''; showToast('Admin login'); }
+        else { adminLoginError.textContent=data.message||'Gagal'; }
+      } catch(e){ adminLoginError.textContent='Connection error'; }
+    };
 
-// ======================
-// AUTO-LOGOUT ON INACTIVITY (OPTIONAL)
-// ======================
-let inactivityTimer;
-function resetInactivityTimer() {
-  clearTimeout(inactivityTimer);
-  if(currentSessionId){
-    inactivityTimer = setTimeout(() => {
-      showToast('Session berakhir karena tidak aktif', 'warning');
-      document.getElementById('logoutBtn').click();
-    }, 20 * 60 * 1000);
-  }
-}
+    // ====================== CREATE ACCOUNT ======================
+    createAccountBtn.onclick = async ()=>{
+      const u=newUsername.value.trim(), p=newPassword.value.trim(), type=accountType.value, email=newEmail.value.trim()||`${u}@admin.riskyhosting.com`;
+      if(u.length<3 || p.length<6){ showToast('Minimal 3/6 karakter','error'); return; }
+      if(!adminSessionId){ showAdminLogin(); return; }
+      adminResult.innerHTML='Membuat akun...';
+      try {
+        const res = await fetch('/api/server',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'create_admin_account',new_username:u,new_password:p,account_type:type,email,session_id:adminSessionId})});
+        const data = await res.json();
+        if(data.success){ adminResult.innerHTML = `<span style="color:#5eead4;">✅ Akun ${u} dibuat!</span>`; newUsername.value=''; newPassword.value=''; newEmail.value=''; }
+        else adminResult.innerHTML='❌ '+data.message;
+      } catch(e){ adminResult.innerHTML='Error'; }
+    };
 
-['click', 'mousemove', 'keypress', 'scroll'].forEach(event => {
-  document.addEventListener(event, resetInactivityTimer);
-});
+    listAllAccountsBtn.onclick = async ()=>{
+      if(!adminSessionId){ showAdminLogin(); return; }
+      adminResult.innerHTML='Loading...';
+      try {
+        const res = await fetch('/api/server',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'list_all_accounts',session_id:adminSessionId})});
+        const data = await res.json();
+        if(data.success && data.accounts){ let html=''; data.accounts.forEach(a=>html+=`<div style="padding:8px;border-bottom:1px solid rgba(255,255,255,0.1);">${a.username} (${a.is_admin?'Admin':'User'})</div>`); adminResult.innerHTML=html; }
+        else adminResult.innerHTML='Gagal';
+      } catch(e){}
+    };
 
-resetInactivityTimer();
+    listAllServersBtn.onclick = async ()=>{
+      if(!adminSessionId){ showAdminLogin(); return; }
+      adminResult.innerHTML='Stats...';
+      try {
+        const res = await fetch('/api/server',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'system_stats',session_id:adminSessionId})});
+        const data = await res.json();
+        if(data.success && data.stats){ adminResult.innerHTML=`Panel: ${data.stats.panel_status}, Servers: ${data.stats.total_servers}, Users: ${data.stats.total_users}`; }
+      } catch(e){}
+    };
 
-// ======================
-// INPUT VALIDATION
-// ======================
-document.getElementById('serverName').addEventListener('input', function(e){
-  this.value = this.value.replace(/[^a-zA-Z0-9-_]/g, '');
-});
+    adminLogoutBtn.onclick = async ()=>{ try{ if(adminSessionId) await fetch('/api/server',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'logout',session_id:adminSessionId})}); }catch(e){} localStorage.removeItem('admin_session_id'); adminSessionId=''; showLogin(); };
 
-// ======================
-// CHECK ADMIN SESSION ON LOAD
-// ======================
-function checkAdminSession() {
-  const adminSession = localStorage.getItem('admin_session_id');
-  if (adminSession) {
-    loginDiv.style.display = 'none';
-    panel.style.display = 'none';
-    adminLoginDiv.style.display = 'none';
-    adminPanel.style.display = 'block';
-  }
-}
+    // ====================== CREATE SERVER ======================
+    $('createBtn').onclick = async ()=>{
+      const name=$('serverName').value.trim(), ram=ramSelect.value;
+      if(!name){ showToast('Nama wajib','error'); return; }
+      if(!currentSessionId){ showToast('Session expired','error'); showLogin(); return; }
+      resultDiv.textContent='Membuat...';
+      try {
+        const res = await fetch('/api/server',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'create',name,ram,session_id:currentSessionId})});
+        const data = await res.json();
+        if(data.success){
+          resultDiv.textContent=`✅ ${data.username} | ${data.password} | ${data.panel}`;
+          showAction({username:data.username,password:data.password,panel:data.panel});
+          const hist=JSON.parse(localStorage.getItem('serverHistory')||'[]');
+          hist.push({date:new Date().toLocaleString(),...data}); localStorage.setItem('serverHistory',JSON.stringify(hist));
+          showToast('Server dibuat!');
+        } else { resultDiv.textContent='❌ '+data.message; hideAction(); }
+      } catch(e){ resultDiv.textContent='Error'; hideAction(); }
+    };
 
-// Run on page load
-checkAdminSession();
+    $('listBtn').onclick = async ()=>{
+      if(!currentSessionId) return;
+      resultDiv.textContent='Mengambil...';
+      try {
+        const res = await fetch('/api/server',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'list',session_id:currentSessionId})});
+        const data=await res.json(); resultDiv.textContent=data.success?`📊 ${data.count} server`:data.message;
+      } catch(e){}
+    };
 
-// ======================
-// ENTER KEY SUPPORT
-// ======================
-document.addEventListener('keypress', function(e) {
-  if (e.key === 'Enter') {
-    if (loginDiv.style.display !== 'none') {
-      loginBtn.click();
-    } else if (adminLoginDiv.style.display !== 'none') {
-      adminLoginBtn.click();
+    historyBtn.onclick = ()=>{ showHistory(); renderHistory(); };
+    backBtn.onclick = ()=>showPanel();
+
+    function renderHistory(){
+      historyList.innerHTML='';
+      const hist=JSON.parse(localStorage.getItem('serverHistory')||'[]');
+      if(!hist.length){ historyList.innerHTML='<p style="color:#94a3b8;">Kosong</p>'; return; }
+      hist.forEach((entry,i)=>{
+        const card=document.createElement('div');
+        card.style.cssText='background:rgba(255,255,255,0.05);padding:12px;border-radius:16px;margin:8px 0;font-size:0.85rem;';
+        card.innerHTML=`<strong>${entry.username}</strong> | ${entry.date}`;
+        const del=document.createElement('button'); del.textContent='Hapus'; del.className='btn-rose btn-small';
+        del.onclick=async()=>{ if(await showConfirm('Hapus','Yakin?')){ hist.splice(i,1); localStorage.setItem('serverHistory',JSON.stringify(hist)); renderHistory(); } };
+        card.appendChild(del); historyList.appendChild(card);
+      });
     }
-  }
-});
 
-// ======================
-// PASSWORD VISIBILITY TOGGLE (OPTIONAL)
-// ======================
-function togglePasswordVisibility(inputId) {
-  const input = document.getElementById(inputId);
-  const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
-  input.setAttribute('type', type);
-}
+    $('logoutBtn').onclick = async ()=>{
+      try{ if(currentSessionId) await fetch('/api/server',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'logout',session_id:currentSessionId})}); }catch(e){}
+      localStorage.removeItem('session_id'); currentSessionId=''; hideAction(); showLogin(); showToast('Logout');
+    };
 
-// Add eye icons to password fields (optional enhancement)
-document.addEventListener('DOMContentLoaded', function() {
-  // Add email field validation
-  if (newEmail) {
-    newEmail.addEventListener('blur', function() {
-      if (this.value && !this.value.includes('@')) {
-        this.style.borderColor = '#da3633';
-        showToast('Email tidak valid', 'warning');
-      } else {
-        this.style.borderColor = '#30363d';
-      }
-    });
-  }
-});
+    document.addEventListener('keypress',e=>{ if(e.key==='Enter'){ if(loginDiv.style.display!=='none') loginBtn.click(); else if(adminLoginDiv.style.display!=='none') adminLoginBtn.click(); }});
+    $('serverName').addEventListener('input',function(){this.value=this.value.replace(/[^a-zA-Z0-9-_]/g,'');});
+    hideAction();
+  })();
 </script>
 </body>
       </html>
