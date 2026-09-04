@@ -1,5 +1,5 @@
 export const PANEL_URL = "https://papi.queen-official.com";
-export const API_KEY = "ptla_v6RbRIJWaqemLlHFFs6KimnDhUEnitrrRleRT8DvwoU";
+export const API_KEY = "ptla_hNlG0R0Z6kaKzbr9FcodE6X4dIwQg2bIEco116UnaNq";
 export const NODE_ID = "1";
 export const NEST_ID = "5";
 export const EGG_ID = "15";
